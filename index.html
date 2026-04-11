@@ -4,1785 +4,1188 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Aura Logistic — by Yusta Labs</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
-  --emerald: #10B981;
-  --emerald-light: #06D6A0;
-  --emerald-dark: #059669;
-  --blue: #3B82F6;
-  --blue-dark: #2563EB;
-  --bg: #0A0A0A;
-  --card: #111111;
-  --card-hover: #161616;
-  --border: #1F1F1F;
-  --border-light: #2A2A2A;
-  --text: #F5F5F5;
-  --text-secondary: #A3A3A3;
-  --text-muted: #737373;
+  --bg: #07050F;
+  --surface: #110D24;
+  --surface2: #1A1535;
+  --border: #2D2650;
+  --primary: #7C3AED;
+  --primary-dim: #6D28D9;
+  --primary-glow: rgba(124,58,237,.15);
+  --accent: #F59E0B;
+  --text: #F5F3FF;
+  --text-muted: #9B8FCC;
   --danger: #EF4444;
   --warning: #F59E0B;
-  --info: #3B82F6;
-  --success: #10B981;
-  --sidebar-width: 260px;
-  --bottom-nav-height: 72px;
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --success: #22C55E;
+  --sidebar-w: 230px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.sidebar{position:fixed;left:0;top:0;width:var(--sidebar-w);height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100}
+.sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
+.logo-row{display:flex;align-items:center;gap:10px}
+.logo-icon{width:38px;height:38px;flex-shrink:0}
+.logo-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;color:var(--text)}
+.logo-sub{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px;font-weight:600}
+.nav{flex:1;padding:12px 0;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;border-left:3px solid transparent;transition:.2s;color:var(--text-muted);font-size:14px;font-weight:500}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{border-left-color:var(--primary);background:var(--surface2);color:var(--primary)}
+.nav-item svg{width:18px;height:18px;flex-shrink:0}
+.sidebar-footer{padding:16px 20px;border-top:1px solid var(--border);font-size:11px;color:var(--text-muted)}
+.main{margin-left:var(--sidebar-w);min-height:100vh;padding:24px}
+.page{display:none}
+.page.active{display:block}
+.topbar{display:none;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:99}
+.topbar-logo{display:flex;align-items:center;gap:8px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px}
+.hamburger{background:none;border:none;color:var(--text);cursor:pointer;padding:4px}
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+.mobile-nav-inner{display:flex;justify-content:space-around}
+.mnav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;cursor:pointer;flex:1;color:var(--text-muted);font-size:10px;font-weight:500;border:none;background:none;transition:.2s}
+.mnav-item.active{color:var(--primary)}
+.mnav-item svg{width:20px;height:20px}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;position:relative;overflow:hidden;transition:.2s;cursor:default}
+.kpi-card:hover{border-color:var(--primary);box-shadow:0 0 20px var(--primary-glow)}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--primary),var(--accent))}
+.kpi-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600;margin-bottom:8px}
+.kpi-value{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:500}
+.kpi-sub{font-size:12px;color:var(--text-muted);margin-top:4px}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:8px}
+.section-title{font-size:20px;font-weight:700}
+.section-sub{font-size:13px;color:var(--text-muted);margin-top:2px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:.2s;font-family:'Inter',sans-serif}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-dim)}
+.btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--primary);color:var(--primary)}
+.btn-danger{background:rgba(239,68,68,.15);color:var(--danger);border:1px solid rgba(239,68,68,.3)}
+.btn-success{background:rgba(34,197,94,.15);color:var(--success);border:1px solid rgba(34,197,94,.3)}
+.btn-warning{background:rgba(245,158,11,.15);color:var(--warning);border:1px solid rgba(245,158,11,.3)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;font-family:'Space Grotesk',sans-serif;white-space:nowrap}
+.badge-pendiente{background:rgba(245,158,11,.15);color:var(--warning);border:1px solid rgba(245,158,11,.2)}
+.badge-en_curso{background:rgba(124,58,237,.2);color:#a78bfa;border:1px solid rgba(124,58,237,.3)}
+.badge-entregado{background:rgba(34,197,94,.15);color:var(--success);border:1px solid rgba(34,197,94,.2)}
+.badge-cancelado{background:rgba(239,68,68,.15);color:var(--danger);border:1px solid rgba(239,68,68,.2)}
+.table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse}
+thead th{background:var(--surface2);padding:11px 14px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);font-weight:600;white-space:nowrap}
+tbody tr{border-top:1px solid var(--border);transition:.2s}
+tbody tr:hover{background:var(--surface2)}
+tbody td{padding:11px 14px;font-size:13px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;transition:.2s}
+.card:hover{border-color:var(--primary);box-shadow:0 0 15px var(--primary-glow)}
+.card-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.card-title{font-weight:600;font-size:15px;font-family:'Space Grotesk',sans-serif}
+.card-sub{font-size:12px;color:var(--text-muted);margin-top:3px}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px}
+.chart-title{font-size:13px;font-weight:600;color:var(--text-muted);margin-bottom:16px;text-transform:uppercase;letter-spacing:.6px}
+.chart-wrap{position:relative;height:180px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto}
+.modal-lg{max-width:800px}
+.modal-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:1}
+.modal-title{font-size:17px;font-weight:700;font-family:'Space Grotesk',sans-serif}
+.modal-close{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:20px;line-height:1;padding:4px}
+.modal-body{padding:20px 24px}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;font-family:'Space Grotesk',sans-serif}
+.form-control{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:.2s}
+.form-control:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-glow)}
+.form-control option{background:var(--surface2)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.search-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.search-input{flex:1;min-width:150px;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:9px 14px;font-size:14px;outline:none;font-family:'Inter',sans-serif}
+.search-input:focus{border-color:var(--primary)}
+.search-input::placeholder{color:var(--text-muted)}
+.viaje-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;transition:.2s;flex-wrap:wrap}
+.viaje-card:hover{border-color:var(--primary)}
+.viaje-card.pendiente{border-left:3px solid var(--warning)}
+.viaje-card.en_curso{border-left:3px solid #7C3AED}
+.viaje-card.entregado{border-left:3px solid var(--success)}
+.viaje-card.cancelado{border-left:3px solid var(--danger)}
+.viaje-id{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-muted);white-space:nowrap}
+.viaje-info{flex:1;min-width:150px}
+.viaje-ruta{font-weight:600;font-size:14px;margin-bottom:3px}
+.viaje-meta{font-size:12px;color:var(--text-muted)}
+.viaje-price{font-family:'JetBrains Mono',monospace;font-weight:500;font-size:15px;white-space:nowrap}
+.summary-bar{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.summary-item{text-align:center;min-width:80px}
+.summary-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;font-weight:600}
+.summary-value{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:500;margin-top:2px}
+.toast-container{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--text);animation:slideIn .3s ease;box-shadow:0 8px 24px rgba(0,0,0,.5);max-width:300px}
+.toast.success{border-left:3px solid var(--success)}
+.toast.error{border-left:3px solid var(--danger)}
+.toast.info{border-left:3px solid var(--primary)}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+.mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:150;backdrop-filter:blur(4px)}
+.mobile-overlay.open{display:block}
+.mobile-drawer{position:fixed;left:0;top:0;bottom:0;width:240px;background:var(--surface);border-right:1px solid var(--border);z-index:151;transform:translateX(-100%);transition:.3s;display:flex;flex-direction:column}
+.mobile-drawer.open{transform:translateX(0)}
+.empty{text-align:center;padding:40px;color:var(--text-muted)}
+.empty-icon{font-size:36px;margin-bottom:10px;opacity:.4}
+.divider{height:1px;background:var(--border);margin:16px 0}
+.progress{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:6px}
+.progress-fill{height:100%;background:var(--primary);border-radius:2px}
+.status-select{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:4px 8px;font-size:12px;font-family:'Inter',sans-serif;cursor:pointer;outline:none}
+.status-select:focus{border-color:var(--primary)}
+.zona-row{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--border);transition:.2s;flex-wrap:wrap}
+.zona-row:hover{background:var(--surface2)}
+.zona-name{flex:1;font-size:13px;font-weight:500;min-width:120px}
+.zona-region{font-size:11px;color:var(--text-muted);padding:2px 8px;background:var(--surface2);border:1px solid var(--border);border-radius:12px}
+.zona-price{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;min-width:80px;text-align:right}
+.zona-edit-input{background:var(--surface2);border:1px solid var(--primary);color:var(--text);border-radius:6px;padding:4px 8px;font-size:13px;font-family:'JetBrains Mono',monospace;width:90px;outline:none}
+@media print{
+  .sidebar,.topbar,.mobile-nav,.btn,.toast-container,.modal-overlay{display:none!important}
+  .main{margin:0!important;padding:10px!important}
+  body{background:#fff!important;color:#000!important}
+}
+@media(max-width:768px){
+  .sidebar{display:none}
+  .main{margin-left:0;padding:16px;padding-bottom:84px}
+  .topbar{display:flex}
+  .mobile-nav{display:block}
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  .charts-grid{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  .section-header{flex-direction:column;align-items:flex-start}
+  .table-wrap table{min-width:700px}
+}
+@media(max-width:420px){
+  .kpi-value{font-size:17px}
+  .kpi-grid{grid-template-columns:1fr 1fr}
 }
-
-html { font-size: 16px; -webkit-font-smoothing: antialiased; }
-
-body {
-  font-family: 'Inter', -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-h1, h2, h3, h4, h5 { font-family: 'Space Grotesk', sans-serif; font-weight: 600; }
-
-.mono { font-family: 'JetBrains Mono', monospace; }
-
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #404040; }
-
-/* ============ SIDEBAR (desktop) ============ */
-.sidebar {
-  display: none;
-  position: fixed;
-  left: 0; top: 0; bottom: 0;
-  width: var(--sidebar-width);
-  background: var(--card);
-  border-right: 1px solid var(--border);
-  flex-direction: column;
-  z-index: 100;
-  padding: 24px 0;
-}
-
-@media (min-width: 1024px) {
-  .sidebar { display: flex; }
-  .main-content { margin-left: var(--sidebar-width); }
-  .bottom-nav { display: none !important; }
-}
-
-.sidebar-brand {
-  padding: 0 24px 28px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 8px;
-}
-
-.sidebar-brand .logo-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.logo-icon {
-  width: 42px; height: 42px;
-  background: linear-gradient(135deg, var(--emerald), var(--emerald-light));
-  border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px;
-  box-shadow: 0 0 20px rgba(16,185,129,0.25);
-}
-
-.sidebar-brand h1 {
-  font-size: 1.2rem;
-  color: var(--text);
-  line-height: 1.2;
-}
-
-.sidebar-brand .subtitle {
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  font-weight: 400;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  margin-top: 2px;
-}
-
-.sidebar-nav { flex: 1; padding: 8px 12px; }
-
-.sidebar-nav-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border-radius: 10px;
-  cursor: pointer;
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: all 0.2s;
-  margin-bottom: 2px;
-  user-select: none;
-}
-
-.sidebar-nav-item:hover {
-  background: rgba(255,255,255,0.04);
-  color: var(--text);
-}
-
-.sidebar-nav-item.active {
-  background: rgba(16,185,129,0.1);
-  color: var(--emerald);
-}
-
-.sidebar-nav-item .nav-icon {
-  width: 20px;
-  text-align: center;
-  font-size: 1.05rem;
-}
-
-.sidebar-footer {
-  padding: 16px 24px;
-  border-top: 1px solid var(--border);
-}
-
-.sidebar-footer .yusta-badge {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 0.75rem;
-  color: var(--text-muted);
-}
-
-.sidebar-footer .yusta-dot {
-  width: 8px; height: 8px;
-  background: var(--emerald);
-  border-radius: 50%;
-  animation: pulse-dot 2s infinite;
-}
-
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-
-/* ============ BOTTOM NAV (mobile) ============ */
-.bottom-nav {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  height: calc(var(--bottom-nav-height) + var(--safe-bottom));
-  padding-bottom: var(--safe-bottom);
-  background: var(--card);
-  border-top: 1px solid var(--border);
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  z-index: 200;
-}
-
-@media (min-width: 1024px) {
-  .bottom-nav { display: none; }
-}
-
-.bottom-nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  cursor: pointer;
-  color: var(--text-muted);
-  font-size: 0.65rem;
-  font-weight: 500;
-  padding: 6px 8px;
-  transition: color 0.2s;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.bottom-nav-item .bnav-icon { font-size: 1.25rem; }
-
-.bottom-nav-item.active { color: var(--emerald); }
-
-/* ============ MAIN CONTENT ============ */
-.main-content {
-  min-height: 100vh;
-  padding: 20px 16px calc(var(--bottom-nav-height) + var(--safe-bottom) + 20px);
-  transition: margin-left 0.3s;
-}
-
-@media (min-width: 1024px) {
-  .main-content { padding: 32px 40px 40px; }
-}
-
-/* Page header */
-.page-header {
-  margin-bottom: 24px;
-}
-
-.page-header h2 {
-  font-size: 1.5rem;
-  margin-bottom: 4px;
-}
-
-@media (min-width: 1024px) {
-  .page-header h2 { font-size: 1.75rem; }
-}
-
-.page-header .page-subtitle {
-  color: var(--text-muted);
-  font-size: 0.85rem;
-}
-
-/* Mobile brand header */
-.mobile-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 24px;
-}
-
-@media (min-width: 1024px) {
-  .mobile-header { display: none; }
-}
-
-.mobile-header .logo-icon {
-  width: 36px; height: 36px;
-  font-size: 16px;
-}
-
-.mobile-header h1 { font-size: 1.1rem; }
-.mobile-header .subtitle { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-
-/* ============ PAGES ============ */
-.page { display: none; animation: fadeIn 0.25s ease; }
-.page.active { display: block; }
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ============ KPI CARDS ============ */
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-@media (min-width: 768px) {
-  .kpi-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; }
-}
-
-.kpi-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 18px;
-  transition: border-color 0.2s, transform 0.15s;
-}
-
-.kpi-card:hover {
-  border-color: var(--border-light);
-  transform: translateY(-1px);
-}
-
-.kpi-card .kpi-label {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  margin-bottom: 8px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
-.kpi-card .kpi-value {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--text);
-}
-
-.kpi-card .kpi-change {
-  font-size: 0.7rem;
-  margin-top: 6px;
-  font-weight: 500;
-}
-
-.kpi-card .kpi-change.up { color: var(--emerald); }
-.kpi-card .kpi-change.down { color: var(--danger); }
-
-/* ============ CHARTS ============ */
-.charts-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-@media (min-width: 768px) {
-  .charts-grid { grid-template-columns: 2fr 1fr; }
-}
-
-.chart-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 20px;
-}
-
-.chart-card h3 {
-  font-size: 0.95rem;
-  margin-bottom: 16px;
-  color: var(--text-secondary);
-  font-weight: 500;
-}
-
-.chart-container {
-  position: relative;
-  width: 100%;
-}
-
-.chart-container canvas { width: 100% !important; }
-
-/* ============ BADGES ============ */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  white-space: nowrap;
-}
-
-.badge-pendiente { background: rgba(245,158,11,0.15); color: #FBBF24; }
-.badge-encurso { background: rgba(59,130,246,0.15); color: #60A5FA; }
-.badge-entregado { background: rgba(16,185,129,0.15); color: #34D399; }
-.badge-cancelado { background: rgba(239,68,68,0.15); color: #F87171; }
-
-/* ============ TABLE / CARDS ============ */
-.data-table-wrapper {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  overflow: hidden;
-}
-
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  display: none;
-}
-
-@media (min-width: 1024px) {
-  .data-table { display: table; }
-  .mobile-cards { display: none !important; }
-}
-
-.data-table th {
-  text-align: left;
-  padding: 14px 16px;
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: 600;
-  border-bottom: 1px solid var(--border);
-  background: rgba(255,255,255,0.02);
-}
-
-.data-table td {
-  padding: 14px 16px;
-  font-size: 0.85rem;
-  border-bottom: 1px solid var(--border);
-  color: var(--text-secondary);
-}
-
-.data-table tr:last-child td { border-bottom: none; }
-
-.data-table tr:hover td { background: rgba(255,255,255,0.02); }
-
-.data-table .mono { font-size: 0.8rem; font-weight: 500; }
-
-/* Mobile cards */
-.mobile-cards { display: flex; flex-direction: column; gap: 10px; }
-
-@media (min-width: 1024px) { .mobile-cards { display: none; } }
-
-.mobile-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px;
-  transition: border-color 0.2s;
-}
-
-.mobile-card:hover { border-color: var(--border-light); }
-
-.mobile-card .mc-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.mobile-card .mc-id {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.8rem;
-  color: var(--emerald);
-  font-weight: 600;
-}
-
-.mobile-card .mc-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  margin-bottom: 6px;
-}
-
-.mobile-card .mc-label { color: var(--text-muted); }
-
-/* ============ FILTERS ============ */
-.filters-bar {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
-
-.filter-select, .filter-input {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 10px 14px;
-  color: var(--text);
-  font-size: 0.82rem;
-  font-family: 'Inter', sans-serif;
-  outline: none;
-  transition: border-color 0.2s;
-  min-width: 140px;
-}
-
-.filter-select:focus, .filter-input:focus {
-  border-color: var(--emerald);
-}
-
-.filter-select option { background: var(--card); }
-
-/* ============ RANKING ============ */
-.ranking-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 20px;
-}
-
-.ranking-card h3 {
-  font-size: 0.95rem;
-  margin-bottom: 16px;
-  color: var(--text-secondary);
-  font-weight: 500;
-}
-
-.ranking-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.ranking-item:last-child { border-bottom: none; }
-
-.ranking-pos {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--emerald);
-  width: 24px;
-}
-
-.ranking-avatar {
-  width: 36px; height: 36px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, var(--emerald-dark), var(--blue));
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: white;
-}
-
-.ranking-info { flex: 1; }
-.ranking-info .name { font-size: 0.85rem; font-weight: 600; }
-.ranking-info .detail { font-size: 0.72rem; color: var(--text-muted); }
-.ranking-value { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; font-weight: 600; color: var(--emerald); }
-
-/* ============ COURIER CARDS ============ */
-.courier-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-}
-
-@media (min-width: 768px) {
-  .courier-grid { grid-template-columns: repeat(3, 1fr); }
-}
-
-.courier-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 24px;
-  transition: border-color 0.2s, transform 0.15s;
-}
-
-.courier-card:hover {
-  border-color: var(--emerald-dark);
-  transform: translateY(-2px);
-}
-
-.courier-card .cc-top {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 20px;
-}
-
-.courier-card .cc-avatar {
-  width: 48px; height: 48px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, var(--emerald), var(--emerald-light));
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: white;
-  flex-shrink: 0;
-}
-
-.courier-card .cc-name { font-size: 1rem; font-weight: 600; }
-.courier-card .cc-zone { font-size: 0.78rem; color: var(--text-muted); }
-
-.courier-card .cc-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-bottom: 16px;
-}
-
-.courier-card .cc-stat {
-  text-align: center;
-  padding: 10px 0;
-  background: rgba(255,255,255,0.02);
-  border-radius: 10px;
-}
-
-.courier-card .cc-stat-value {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 1.1rem;
-  font-weight: 700;
-}
-
-.courier-card .cc-stat-label {
-  font-size: 0.65rem;
-  color: var(--text-muted);
-  margin-top: 2px;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
-.courier-card .cc-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-}
-
-.courier-card .cc-meta-row {
-  display: flex;
-  justify-content: space-between;
-}
-
-.courier-card .cc-meta-label { color: var(--text-muted); }
-
-.cc-vehicle-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  background: rgba(59,130,246,0.12);
-  color: #60A5FA;
-}
-
-/* ============ COMPANY CARDS ============ */
-.empresa-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-}
-
-@media (min-width: 768px) {
-  .empresa-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (min-width: 1200px) {
-  .empresa-grid { grid-template-columns: repeat(3, 1fr); }
-}
-
-.empresa-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 24px;
-  cursor: pointer;
-  transition: border-color 0.2s, transform 0.15s;
-}
-
-.empresa-card:hover {
-  border-color: var(--emerald-dark);
-  transform: translateY(-2px);
-}
-
-.empresa-card .ec-name { font-size: 1.05rem; font-weight: 600; margin-bottom: 4px; }
-.empresa-card .ec-cuit { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 16px; }
-
-.empresa-card .ec-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.empresa-card .ec-stat-value {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 1.15rem;
-  font-weight: 700;
-}
-
-.empresa-card .ec-stat-label {
-  font-size: 0.68rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
-.empresa-card .ec-info {
-  font-size: 0.78rem;
-  color: var(--text-secondary);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.empresa-card .ec-info-row { display: flex; gap: 8px; }
-.empresa-card .ec-info-icon { opacity: 0.5; }
-
-/* ============ ZONES ============ */
-.zone-search {
-  width: 100%;
-  max-width: 400px;
-  margin-bottom: 20px;
-}
-
-.zone-group {
-  margin-bottom: 24px;
-}
-
-.zone-group-title {
-  font-size: 0.8rem;
-  color: var(--emerald);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: 700;
-  margin-bottom: 10px;
-  padding-left: 4px;
-}
-
-.zone-list {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-}
-
-@media (min-width: 768px) {
-  .zone-list { grid-template-columns: repeat(3, 1fr); }
-}
-
-@media (min-width: 1200px) {
-  .zone-list { grid-template-columns: repeat(4, 1fr); }
-}
-
-.zone-item {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 14px;
-  font-size: 0.82rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: border-color 0.2s;
-}
-
-.zone-item:hover { border-color: var(--border-light); }
-
-.zone-item .zi-name { font-weight: 500; }
-
-.zone-item .zi-count {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  background: rgba(255,255,255,0.04);
-  padding: 2px 8px;
-  border-radius: 6px;
-}
-
-.zone-item .zi-courier {
-  font-size: 0.68rem;
-  color: var(--text-muted);
-  margin-top: 4px;
-}
-
-/* ============ LIQUIDACION ============ */
-.liq-section {
-  margin-bottom: 32px;
-}
-
-.liq-section h3 {
-  font-size: 1.1rem;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.liq-total-bar {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-}
-
-.liq-total-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 20px 24px;
-  flex: 1;
-  min-width: 200px;
-}
-
-.liq-total-card .ltc-label {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  margin-bottom: 6px;
-}
-
-.liq-total-card .ltc-value {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--emerald);
-}
-
-/* ============ MODAL ============ */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.7);
-  backdrop-filter: blur(4px);
-  z-index: 500;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.modal-overlay.active { display: flex; }
-
-.modal {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  width: 100%;
-  max-width: 600px;
-  max-height: 80vh;
-  overflow-y: auto;
-  padding: 28px;
-  animation: modalIn 0.25s ease;
-}
-
-@keyframes modalIn {
-  from { opacity: 0; transform: scale(0.95) translateY(10px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.modal-header h3 { font-size: 1.15rem; }
-
-.modal-close {
-  width: 32px; height: 32px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--text-muted);
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.1rem;
-  transition: all 0.2s;
-}
-
-.modal-close:hover { border-color: var(--danger); color: var(--danger); }
-
-.modal-section { margin-bottom: 20px; }
-.modal-section-title {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 10px;
-  font-weight: 600;
-}
-
-.modal-info-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.modal-info-item .mii-label { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 2px; }
-.modal-info-item .mii-value { font-size: 0.88rem; font-weight: 500; }
-
-.modal-trip-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 0.82rem;
-}
-
-.modal-trip-item:last-child { border-bottom: none; }
-
-/* ============ PROGRESS BAR ============ */
-.progress-bar {
-  height: 6px;
-  background: var(--border);
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  border-radius: 3px;
-  background: linear-gradient(90deg, var(--emerald), var(--emerald-light));
-  transition: width 0.5s ease;
-}
-
-/* Utility */
-.text-emerald { color: var(--emerald); }
-.text-muted { color: var(--text-muted); }
-.text-right { text-align: right; }
-.fw-600 { font-weight: 600; }
-.mt-8 { margin-top: 8px; }
-.mb-16 { margin-bottom: 16px; }
-.hidden { display: none; }
 </style>
 </head>
 <body>
+<div class="toast-container" id="toastContainer"></div>
 
-<!-- ========== SIDEBAR (desktop) ========== -->
-<aside class="sidebar">
-  <div class="sidebar-brand">
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-logo">
     <div class="logo-row">
-      <div class="logo-icon">⚡</div>
+      <svg class="logo-icon" viewBox="0 0 38 38" fill="none">
+        <defs><linearGradient id="lgl" x1="0" y1="0" x2="38" y2="38"><stop stop-color="#7C3AED"/><stop offset="1" stop-color="#F59E0B"/></linearGradient></defs>
+        <rect x="2" y="2" width="34" height="34" rx="10" fill="url(#lgl)"/>
+        <!-- Package box -->
+        <path d="M10 16 L19 12 L28 16 L28 26 L19 30 L10 26 Z" fill="none" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M10 16 L19 20 L28 16" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M19 20 L19 30" stroke="white" stroke-width="1.5"/>
+        <path d="M14 14 L23 18" stroke="rgba(255,255,255,.5)" stroke-width="1"/>
+        <!-- Speed lines -->
+        <path d="M4 10 L9 10" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity=".6"/>
+        <path d="M3 13 L7 13" stroke="white" stroke-width="1" stroke-linecap="round" opacity=".4"/>
+        <path d="M5 7 L8 7" stroke="white" stroke-width="1" stroke-linecap="round" opacity=".3"/>
+      </svg>
       <div>
-        <h1>Aura Logistic</h1>
-        <div class="subtitle">by Yusta Labs</div>
+        <div class="logo-name">Aura Logistic</div>
+        <div class="logo-sub">by Yusta Labs</div>
       </div>
     </div>
   </div>
-  <nav class="sidebar-nav" id="sidebarNav">
-    <div class="sidebar-nav-item active" data-page="dashboard">
-      <span class="nav-icon">📊</span> Dashboard
+  <nav class="nav">
+    <div class="nav-item active" onclick="goto('dashboard')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
     </div>
-    <div class="sidebar-nav-item" data-page="viajes">
-      <span class="nav-icon">🚚</span> Viajes
+    <div class="nav-item" onclick="goto('viajes')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3"/><rect x="9" y="11" width="14" height="10" rx="2"/><circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/></svg>
+      Viajes
     </div>
-    <div class="sidebar-nav-item" data-page="cadetes">
-      <span class="nav-icon">👤</span> Cadetes
+    <div class="nav-item" onclick="goto('nuevo-viaje')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Nuevo Viaje
     </div>
-    <div class="sidebar-nav-item" data-page="empresas">
-      <span class="nav-icon">🏢</span> Empresas
+    <div class="nav-item" onclick="goto('cadetes')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      Cadetes
     </div>
-    <div class="sidebar-nav-item" data-page="zonas">
-      <span class="nav-icon">📍</span> Zonas
+    <div class="nav-item" onclick="goto('empresas')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+      Empresas
     </div>
-    <div class="sidebar-nav-item" data-page="liquidacion">
-      <span class="nav-icon">💰</span> Liquidación
+    <div class="nav-item" onclick="goto('zonas')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 018 8c0 5.25-8 14-8 14S4 15.25 4 10a8 8 0 018-8z"/></svg>
+      Zonas y Precios
+    </div>
+    <div class="nav-item" onclick="goto('liquidacion')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      Liquidación
     </div>
   </nav>
   <div class="sidebar-footer">
-    <div class="yusta-badge">
-      <span class="yusta-dot"></span>
-      Yusta Labs — v1.0.0
-    </div>
+    <strong style="color:var(--text-muted);font-family:'Space Grotesk',sans-serif">Aura Logistic v2</strong><br>
+    Demo — Yusta Labs © 2026
   </div>
-</aside>
-
-<!-- ========== BOTTOM NAV (mobile) ========== -->
-<nav class="bottom-nav" id="bottomNav">
-  <div class="bottom-nav-item active" data-page="dashboard">
-    <span class="bnav-icon">📊</span>
-    <span>Inicio</span>
-  </div>
-  <div class="bottom-nav-item" data-page="viajes">
-    <span class="bnav-icon">🚚</span>
-    <span>Viajes</span>
-  </div>
-  <div class="bottom-nav-item" data-page="cadetes">
-    <span class="bnav-icon">👤</span>
-    <span>Cadetes</span>
-  </div>
-  <div class="bottom-nav-item" data-page="empresas">
-    <span class="bnav-icon">🏢</span>
-    <span>Empresas</span>
-  </div>
-  <div class="bottom-nav-item" data-page="zonas">
-    <span class="bnav-icon">📍</span>
-    <span>Zonas</span>
-  </div>
-  <div class="bottom-nav-item" data-page="liquidacion">
-    <span class="bnav-icon">💰</span>
-    <span>Liquid.</span>
-  </div>
-</nav>
-
-<!-- ========== MODAL ========== -->
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal" id="modalContent"></div>
 </div>
 
-<!-- ========== MAIN CONTENT ========== -->
-<main class="main-content">
+<!-- TOPBAR MOBILE -->
+<div class="topbar">
+  <button class="hamburger" onclick="toggleDrawer()">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <div class="topbar-logo">
+    <svg width="24" height="24" viewBox="0 0 38 38" fill="none"><defs><linearGradient id="lglm" x1="0" y1="0" x2="38" y2="38"><stop stop-color="#7C3AED"/><stop offset="1" stop-color="#F59E0B"/></linearGradient></defs><rect x="2" y="2" width="34" height="34" rx="10" fill="url(#lglm)"/><path d="M10 16 L19 12 L28 16 L28 26 L19 30 L10 26 Z" fill="none" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 16 L19 20 L28 16" stroke="white" stroke-width="1.5"/><path d="M19 20 L19 30" stroke="white" stroke-width="1.5"/></svg>
+    Aura Logistic
+  </div>
+  <div style="width:30px"></div>
+</div>
 
-  <!-- Mobile header -->
-  <div class="mobile-header">
-    <div class="logo-icon">⚡</div>
-    <div>
-      <h1>Aura Logistic</h1>
-      <div class="subtitle">by Yusta Labs</div>
+<div class="mobile-overlay" id="mobileOverlay" onclick="toggleDrawer()"></div>
+<div class="mobile-drawer" id="mobileDrawer">
+  <div class="sidebar-logo" style="padding:20px"><div class="logo-row"><div><div class="logo-name">Aura Logistic</div><div class="logo-sub">by Yusta Labs</div></div></div></div>
+  <nav class="nav">
+    <div class="nav-item" onclick="goto('dashboard');toggleDrawer()">Dashboard</div>
+    <div class="nav-item" onclick="goto('viajes');toggleDrawer()">Viajes</div>
+    <div class="nav-item" onclick="goto('nuevo-viaje');toggleDrawer()">Nuevo Viaje</div>
+    <div class="nav-item" onclick="goto('cadetes');toggleDrawer()">Cadetes</div>
+    <div class="nav-item" onclick="goto('empresas');toggleDrawer()">Empresas</div>
+    <div class="nav-item" onclick="goto('zonas');toggleDrawer()">Zonas y Precios</div>
+    <div class="nav-item" onclick="goto('liquidacion');toggleDrawer()">Liquidación</div>
+  </nav>
+</div>
+
+<div class="mobile-nav">
+  <div class="mobile-nav-inner">
+    <button class="mnav-item active" id="mn-dashboard" onclick="goto('dashboard')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Inicio
+    </button>
+    <button class="mnav-item" id="mn-viajes" onclick="goto('viajes')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3"/><rect x="9" y="11" width="14" height="10" rx="2"/></svg>Viajes
+    </button>
+    <button class="mnav-item" id="mn-nuevo-viaje" onclick="goto('nuevo-viaje')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Nuevo
+    </button>
+    <button class="mnav-item" id="mn-cadetes" onclick="goto('cadetes')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Cadetes
+    </button>
+    <button class="mnav-item" id="mn-liquidacion" onclick="goto('liquidacion')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Liquid.
+    </button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <div class="section-header">
+    <div><div class="section-title">Dashboard</div><div class="section-sub" id="dashDate"></div></div>
+    <button class="btn btn-primary" onclick="goto('nuevo-viaje')">+ Nuevo Viaje</button>
+  </div>
+  <div class="kpi-grid" id="kpiGrid"></div>
+  <div class="charts-grid">
+    <div class="chart-card"><div class="chart-title">Viajes últimos 7 días</div><div class="chart-wrap"><canvas id="chartViajes"></canvas></div></div>
+    <div class="chart-card"><div class="chart-title">Estado de envíos</div><div class="chart-wrap"><canvas id="chartEstados"></canvas></div></div>
+  </div>
+  <div style="font-size:15px;font-weight:700;margin-bottom:12px;font-family:'Space Grotesk',sans-serif">Viajes activos hoy</div>
+  <div id="dashViajes"></div>
+</div>
+
+<!-- VIAJES -->
+<div class="page" id="page-viajes">
+  <div class="section-header">
+    <div><div class="section-title">Viajes</div><div class="section-sub">Gestión de envíos</div></div>
+    <button class="btn btn-primary" onclick="goto('nuevo-viaje')">+ Nuevo Viaje</button>
+  </div>
+  <div class="search-bar">
+    <input class="search-input" placeholder="Buscar empresa, dirección..." id="searchViajes" oninput="renderViajes()">
+    <select class="form-control" style="width:auto" id="filterViajeEstado" onchange="renderViajes()">
+      <option value="">Todos</option><option value="pendiente">Pendiente</option><option value="en_curso">En curso</option><option value="entregado">Entregado</option><option value="cancelado">Cancelado</option>
+    </select>
+    <select class="form-control" style="width:auto" id="filterViajeCadete" onchange="renderViajes()">
+      <option value="">Todos los cadetes</option>
+    </select>
+    <input type="date" class="form-control" style="width:auto" id="filterViajeFecha" onchange="renderViajes()">
+  </div>
+  <div id="viajesList"></div>
+</div>
+
+<!-- NUEVO VIAJE -->
+<div class="page" id="page-nuevo-viaje">
+  <div class="section-header">
+    <div><div class="section-title">Nuevo Viaje</div><div class="section-sub">Registrar nuevo envío</div></div>
+  </div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;max-width:700px">
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Empresa</label><select class="form-control" id="nv_empresa" onchange="calcPrecio()"><option value="">Seleccionar...</option></select></div>
+      <div class="form-group"><label class="form-label">Cadete</label><select class="form-control" id="nv_cadete"><option value="">Seleccionar...</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">Origen — Dirección y localidad</label><input class="form-control" id="nv_origen" placeholder="Ej: Corrientes 1234, CABA"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Destino — Dirección</label><input class="form-control" id="nv_destDir" placeholder="Ej: San Martín 567"></div>
+      <div class="form-group"><label class="form-label">Zona destino</label><select class="form-control" id="nv_zona" onchange="calcPrecio()"><option value="">Seleccionar zona...</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Bultos</label><input type="number" class="form-control" id="nv_bultos" value="1" min="1" oninput="calcPrecio()"></div>
+      <div class="form-group"><label class="form-label">Peso (kg)</label><input type="number" class="form-control" id="nv_peso" value="1" min="0" step="0.5"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Precio</label><input type="number" class="form-control" id="nv_precio" placeholder="Auto-calculado"></div>
+      <div class="form-group"><label class="form-label">¿Quién paga?</label><select class="form-control" id="nv_pagador"><option value="empresa">Empresa</option><option value="destinatario">Destinatario</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Fecha</label><input type="date" class="form-control" id="nv_fecha"></div>
+      <div class="form-group"><label class="form-label">Hora pickup</label><input type="time" class="form-control" id="nv_hora" value="09:00"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Observaciones</label><input class="form-control" id="nv_obs" placeholder="Frágil, requiere firma, etc."></div>
+    <div id="nv_preview" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:16px">
+      <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;margin-bottom:8px">Precio estimado</div>
+      <div id="nv_precioPreview" style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:600;color:var(--accent)"></div>
+      <div id="nv_precioDetalle" style="font-size:12px;color:var(--text-muted);margin-top:4px"></div>
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px" onclick="guardarViaje()">Confirmar viaje</button>
+  </div>
+</div>
+
+<!-- CADETES -->
+<div class="page" id="page-cadetes">
+  <div class="section-header">
+    <div><div class="section-title">Cadetes</div></div>
+    <button class="btn btn-primary" onclick="openModal('modalNuevoCadete')">+ Nuevo Cadete</button>
+  </div>
+  <div id="cadetesList"></div>
+</div>
+
+<!-- EMPRESAS -->
+<div class="page" id="page-empresas">
+  <div class="section-header">
+    <div><div class="section-title">Empresas</div></div>
+    <button class="btn btn-primary" onclick="openModal('modalNuevaEmpresa')">+ Nueva Empresa</button>
+  </div>
+  <div class="search-bar"><input class="search-input" placeholder="Buscar empresa..." id="searchEmpresas" oninput="renderEmpresas()"></div>
+  <div id="empresasList"></div>
+</div>
+
+<!-- ZONAS -->
+<div class="page" id="page-zonas">
+  <div class="section-header">
+    <div><div class="section-title">Zonas y Precios</div></div>
+    <button class="btn btn-primary" onclick="openModal('modalNuevaZona')">+ Nueva Zona</button>
+  </div>
+  <div class="search-bar">
+    <input class="search-input" placeholder="Buscar zona..." id="searchZonas" oninput="renderZonas()">
+    <select class="form-control" style="width:auto" id="filterRegion" onchange="renderZonas()">
+      <option value="">Todas las regiones</option><option value="CABA">CABA</option><option value="GBA Sur">GBA Sur</option><option value="GBA Norte">GBA Norte</option><option value="GBA Oeste">GBA Oeste</option>
+    </select>
+  </div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+    <div style="display:grid;grid-template-columns:1fr auto auto auto auto;background:var(--surface2);padding:10px 16px;font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);font-weight:600">
+      <div>Zona</div><div>Región</div><div>Precio base</div><div>Por bulto</div><div></div>
+    </div>
+    <div id="zonasList"></div>
+  </div>
+</div>
+
+<!-- LIQUIDACIÓN -->
+<div class="page" id="page-liquidacion">
+  <div class="section-header">
+    <div><div class="section-title">Liquidación</div></div>
+    <div style="display:flex;gap:8px">
+      <input type="month" class="form-control" style="width:auto" id="liquidMes">
+      <button class="btn btn-ghost btn-sm" onclick="exportLiquidacion()">↓ Excel</button>
+      <button class="btn btn-ghost btn-sm" onclick="window.print()">🖨 Imprimir</button>
     </div>
   </div>
+  <div class="summary-bar" id="liquidSummary"></div>
+  <div style="font-size:15px;font-weight:700;margin-bottom:12px;font-family:'Space Grotesk',sans-serif">Liquidación de Cadetes</div>
+  <div class="table-wrap" style="margin-bottom:24px"><table><thead><tr><th>Cadete</th><th>Viajes</th><th>Monto viajes</th><th>Salario</th><th>Vales</th><th>A pagar</th></tr></thead><tbody id="liquidCadetes"></tbody></table></div>
+  <div style="font-size:15px;font-weight:700;margin-bottom:12px;font-family:'Space Grotesk',sans-serif">Cuentas por Cobrar</div>
+  <div class="table-wrap"><table><thead><tr><th>Empresa</th><th>Viajes</th><th>Total</th><th>Estado</th><th></th></tr></thead><tbody id="liquidEmpresas"></tbody></table></div>
+</div>
 
-  <!-- ===== DASHBOARD ===== -->
-  <div class="page active" id="page-dashboard">
-    <div class="page-header">
-      <h2>Dashboard</h2>
-      <div class="page-subtitle">Resumen operativo — Viernes 11 de Abril, 2026</div>
-    </div>
+</div><!-- /main -->
 
-    <div class="kpi-grid" id="kpiGrid"></div>
+<!-- MODALES -->
 
-    <div class="charts-grid">
-      <div class="chart-card">
-        <h3>Viajes por día — Últimos 7 días</h3>
-        <div class="chart-container">
-          <canvas id="chartBar" height="220"></canvas>
-        </div>
+<!-- DETALLE VIAJE -->
+<div class="modal-overlay" id="modalDetalleViaje">
+  <div class="modal modal-lg">
+    <div class="modal-header"><div class="modal-title" id="dvTitle">Detalle del Viaje</div><button class="modal-close" onclick="closeModal('modalDetalleViaje')">×</button></div>
+    <div class="modal-body" id="dvBody"></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modalDetalleViaje')">Cerrar</button></div>
+  </div>
+</div>
+
+<!-- NUEVO CADETE -->
+<div class="modal-overlay" id="modalNuevoCadete">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title" id="cadModalTitle">Nuevo Cadete</div><button class="modal-close" onclick="closeModal('modalNuevoCadete')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="edit_cadId">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Nombre completo</label><input class="form-control" id="cad_nom" placeholder="Martín Pérez"></div>
+        <div class="form-group"><label class="form-label">Teléfono</label><input class="form-control" id="cad_tel" placeholder="11-4523-7890"></div>
       </div>
-      <div class="chart-card">
-        <h3>Estado de envíos</h3>
-        <div class="chart-container" style="max-width:260px;margin:0 auto;">
-          <canvas id="chartDonut" height="260"></canvas>
-        </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Vehículo</label><select class="form-control" id="cad_veh"><option value="moto">🏍 Moto</option><option value="auto">🚗 Auto</option><option value="utilitario">🚐 Utilitario</option></select></div>
+        <div class="form-group"><label class="form-label">Zona</label><input class="form-control" id="cad_zona" placeholder="Zona Sur"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Salario base</label><input type="number" class="form-control" id="cad_salario" placeholder="180000"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalNuevoCadete')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarCadete()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETALLE CADETE -->
+<div class="modal-overlay" id="modalDetCadete">
+  <div class="modal modal-lg">
+    <div class="modal-header"><div class="modal-title" id="detCadTitle"></div><button class="modal-close" onclick="closeModal('modalDetCadete')">×</button></div>
+    <div class="modal-body" id="detCadBody"></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modalDetCadete')">Cerrar</button></div>
+  </div>
+</div>
+
+<!-- NUEVA EMPRESA -->
+<div class="modal-overlay" id="modalNuevaEmpresa">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title" id="empModalTitle">Nueva Empresa</div><button class="modal-close" onclick="closeModal('modalNuevaEmpresa')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="edit_empId">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Nombre</label><input class="form-control" id="emp_nom" placeholder="Distribuidora del Sur"></div>
+        <div class="form-group"><label class="form-label">CUIT</label><input class="form-control" id="emp_cuit" placeholder="30-71234567-8"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Contacto</label><input class="form-control" id="emp_contacto" placeholder="Sr. Villalba"></div>
+        <div class="form-group"><label class="form-label">Teléfono</label><input class="form-control" id="emp_tel" placeholder="11-2345-6789"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Dirección</label><input class="form-control" id="emp_dir" placeholder="Av. Rivadavia 1234, CABA"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalNuevaEmpresa')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarEmpresa()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETALLE EMPRESA -->
+<div class="modal-overlay" id="modalDetEmpresa">
+  <div class="modal modal-lg">
+    <div class="modal-header"><div class="modal-title" id="detEmpTitle"></div><button class="modal-close" onclick="closeModal('modalDetEmpresa')">×</button></div>
+    <div class="modal-body" id="detEmpBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="exportEmpresaExcel()">↓ Excel</button>
+      <button class="btn btn-ghost" onclick="closeModal('modalDetEmpresa')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- NUEVA ZONA -->
+<div class="modal-overlay" id="modalNuevaZona">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Nueva Zona</div><button class="modal-close" onclick="closeModal('modalNuevaZona')">×</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Nombre</label><input class="form-control" id="zona_nom" placeholder="Palermo"></div>
+        <div class="form-group"><label class="form-label">Región</label><select class="form-control" id="zona_reg"><option value="CABA">CABA</option><option value="GBA Sur">GBA Sur</option><option value="GBA Norte">GBA Norte</option><option value="GBA Oeste">GBA Oeste</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Precio base</label><input type="number" class="form-control" id="zona_base" placeholder="3000"></div>
+        <div class="form-group"><label class="form-label">Precio por bulto</label><input type="number" class="form-control" id="zona_bulto" placeholder="600"></div>
       </div>
     </div>
-
-    <div class="ranking-card" id="rankingCard"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalNuevaZona')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarZona()">Guardar</button>
+    </div>
   </div>
+</div>
 
-  <!-- ===== VIAJES ===== -->
-  <div class="page" id="page-viajes">
-    <div class="page-header">
-      <h2>Viajes</h2>
-      <div class="page-subtitle">Gestión de envíos y entregas</div>
-    </div>
-
-    <div class="filters-bar" id="viajesFilters"></div>
-
-    <div class="data-table-wrapper">
-      <table class="data-table" id="viajesTable">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Fecha</th>
-            <th>Origen</th>
-            <th>Destino</th>
-            <th>Cadete</th>
-            <th>Empresa</th>
-            <th>Bultos</th>
-            <th>Peso</th>
-            <th>Monto</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody id="viajesTableBody"></tbody>
-      </table>
-    </div>
-    <div class="mobile-cards" id="viajesMobileCards"></div>
-  </div>
-
-  <!-- ===== CADETES ===== -->
-  <div class="page" id="page-cadetes">
-    <div class="page-header">
-      <h2>Cadetes</h2>
-      <div class="page-subtitle">Equipo de mensajería y logística</div>
-    </div>
-    <div class="courier-grid" id="cadetesGrid"></div>
-  </div>
-
-  <!-- ===== EMPRESAS ===== -->
-  <div class="page" id="page-empresas">
-    <div class="page-header">
-      <h2>Empresas</h2>
-      <div class="page-subtitle">Clientes corporativos</div>
-    </div>
-    <div class="empresa-grid" id="empresasGrid"></div>
-  </div>
-
-  <!-- ===== ZONAS ===== -->
-  <div class="page" id="page-zonas">
-    <div class="page-header">
-      <h2>Zonas</h2>
-      <div class="page-subtitle">Cobertura y asignación de zonas</div>
-    </div>
-    <input type="text" class="filter-input zone-search" id="zoneSearch" placeholder="Buscar zona...">
-    <div id="zonasContainer"></div>
-  </div>
-
-  <!-- ===== LIQUIDACION ===== -->
-  <div class="page" id="page-liquidacion">
-    <div class="page-header">
-      <h2>Liquidación</h2>
-      <div class="page-subtitle">Liquidación de cadetes y facturación a empresas — Abril 2026</div>
-    </div>
-
-    <div class="liq-total-bar" id="liqTotals"></div>
-
-    <div class="liq-section">
-      <h3>💼 Liquidación de Cadetes</h3>
-      <div class="data-table-wrapper">
-        <table class="data-table" id="liqCadetesTable">
-          <thead>
-            <tr>
-              <th>Cadete</th>
-              <th>Viajes</th>
-              <th>Km Total</th>
-              <th>Eficiencia</th>
-              <th>Monto a Pagar</th>
-            </tr>
-          </thead>
-          <tbody id="liqCadetesBody"></tbody>
-        </table>
+<!-- VALE CADETE -->
+<div class="modal-overlay" id="modalVale">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Registrar Vale</div><button class="modal-close" onclick="closeModal('modalVale')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="vale_cadId">
+      <div class="form-group"><label class="form-label">Concepto</label><input class="form-control" id="vale_concepto" placeholder="Adelanto, combustible, etc."></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Monto</label><input type="number" class="form-control" id="vale_monto" placeholder="5000"></div>
+        <div class="form-group"><label class="form-label">Fecha</label><input type="date" class="form-control" id="vale_fecha"></div>
       </div>
-      <div class="mobile-cards" id="liqCadetesMobile"></div>
     </div>
-
-    <div class="liq-section">
-      <h3>🏢 Facturación a Empresas</h3>
-      <div class="data-table-wrapper">
-        <table class="data-table" id="liqEmpresasTable">
-          <thead>
-            <tr>
-              <th>Empresa</th>
-              <th>CUIT</th>
-              <th>Viajes</th>
-              <th>Total Facturado</th>
-            </tr>
-          </thead>
-          <tbody id="liqEmpresasBody"></tbody>
-        </table>
-      </div>
-      <div class="mobile-cards" id="liqEmpresasMobile"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalVale')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarVale()">Guardar</button>
     </div>
   </div>
-
-</main>
+</div>
 
 <script>
-// ================================================================
-//  DATA
-// ================================================================
+const KEY = 'al-v2';
+let db = {};
 
-const couriers = [
-  {
-    id: 1, name: 'Martín Pérez', phone: '11-5234-8891', zone: 'Zona Sur',
-    vehicle: 'Moto', vehicleIcon: '🏍️', activeTrips: 3, completedToday: 8,
-    efficiency: 94, totalTrips: 187, kmTotal: 2340, montoAPagar: 142500,
-    initials: 'MP'
-  },
-  {
-    id: 2, name: 'Lucas García', phone: '11-6789-4521', zone: 'Zona Norte',
-    vehicle: 'Auto', vehicleIcon: '🚗', activeTrips: 2, completedToday: 6,
-    efficiency: 88, totalTrips: 156, kmTotal: 3120, montoAPagar: 168300,
-    initials: 'LG'
-  },
-  {
-    id: 3, name: 'Facundo Torres', phone: '11-3456-1278', zone: 'CABA',
-    vehicle: 'Utilitario', vehicleIcon: '🚐', activeTrips: 1, completedToday: 5,
-    efficiency: 91, totalTrips: 143, kmTotal: 1890, montoAPagar: 134200,
-    initials: 'FT'
-  }
-];
-
-const empresas = [
-  {
-    id: 1, name: 'Distribuidora del Sur', cuit: '30-71456789-2',
-    contact: 'María López', phone: '11-4567-2233',
-    address: 'Av. Mitre 1450, Avellaneda', tripCount: 78, monthlyBilling: 485000
-  },
-  {
-    id: 2, name: 'Norte Express', cuit: '30-68923456-5',
-    contact: 'Roberto Sánchez', phone: '11-5678-9012',
-    address: 'Av. Maipú 832, Vicente López', tripCount: 62, monthlyBilling: 392000
-  },
-  {
-    id: 3, name: 'Farmacia Central', cuit: '20-34567891-7',
-    contact: 'Ana Fernández', phone: '11-2345-6789',
-    address: 'Av. Corrientes 3200, CABA', tripCount: 95, monthlyBilling: 328000
-  },
-  {
-    id: 4, name: 'TecnoShop', cuit: '30-72345678-1',
-    contact: 'Diego Martínez', phone: '11-7890-1234',
-    address: 'Av. Cabildo 1567, Belgrano', tripCount: 48, monthlyBilling: 567000
-  },
-  {
-    id: 5, name: 'Alimentos Premium', cuit: '30-65432198-4',
-    contact: 'Carolina Ruiz', phone: '11-8901-2345',
-    address: 'Ruta 4 Km 12, Lanús', tripCount: 54, monthlyBilling: 412000
-  }
-];
-
-const viajes = [
-  { id: 'VJ-001', fecha: '2026-04-11', origen: 'Av. Corrientes 3200, CABA', destino: 'Av. Mitre 1450, Avellaneda', courierId: 1, empresaId: 1, bultos: 3, peso: 12.5, monto: 8500, estado: 'entregado' },
-  { id: 'VJ-002', fecha: '2026-04-11', origen: 'Av. Cabildo 1567, Belgrano', destino: 'Av. Maipú 832, V. López', courierId: 2, empresaId: 4, bultos: 1, peso: 3.2, monto: 4200, estado: 'entregado' },
-  { id: 'VJ-003', fecha: '2026-04-11', origen: 'Ruta 4 Km 12, Lanús', destino: 'Av. H. Yrigoyen 5400, Remedios de Escalada', courierId: 1, empresaId: 5, bultos: 6, peso: 28.0, monto: 12500, estado: 'en curso' },
-  { id: 'VJ-004', fecha: '2026-04-11', origen: 'Av. Corrientes 3200, CABA', destino: 'Palermo, CABA', courierId: 3, empresaId: 3, bultos: 2, peso: 1.8, monto: 3500, estado: 'entregado' },
-  { id: 'VJ-005', fecha: '2026-04-11', origen: 'Av. Maipú 832, V. López', destino: 'Av. Santa Fe 2100, Martínez', courierId: 2, empresaId: 2, bultos: 4, peso: 15.0, monto: 9800, estado: 'pendiente' },
-  { id: 'VJ-006', fecha: '2026-04-10', origen: 'Av. Mitre 1450, Avellaneda', destino: 'Av. Calchaquí 3200, Quilmes', courierId: 1, empresaId: 1, bultos: 7, peso: 32.0, monto: 14200, estado: 'entregado' },
-  { id: 'VJ-007', fecha: '2026-04-10', origen: 'Av. Corrientes 3200, CABA', destino: 'Av. Rivadavia 8900, Liniers', courierId: 3, empresaId: 3, bultos: 2, peso: 4.5, monto: 5600, estado: 'entregado' },
-  { id: 'VJ-008', fecha: '2026-04-10', origen: 'Av. Cabildo 1567, Belgrano', destino: 'Olivos, V. López', courierId: 2, empresaId: 4, bultos: 1, peso: 8.0, monto: 7200, estado: 'entregado' },
-  { id: 'VJ-009', fecha: '2026-04-10', origen: 'Ruta 4 Km 12, Lanús', destino: 'Lomas de Zamora Centro', courierId: 1, empresaId: 5, bultos: 5, peso: 22.0, monto: 11000, estado: 'entregado' },
-  { id: 'VJ-010', fecha: '2026-04-09', origen: 'Av. Corrientes 3200, CABA', destino: 'Recoleta, CABA', courierId: 3, empresaId: 3, bultos: 3, peso: 2.1, monto: 4100, estado: 'entregado' },
-  { id: 'VJ-011', fecha: '2026-04-09', origen: 'Av. Maipú 832, V. López', destino: 'San Isidro Centro', courierId: 2, empresaId: 2, bultos: 2, peso: 6.0, monto: 6300, estado: 'cancelado' },
-  { id: 'VJ-012', fecha: '2026-04-09', origen: 'Av. Mitre 1450, Avellaneda', destino: 'Sarandí, Avellaneda', courierId: 1, empresaId: 1, bultos: 8, peso: 45.0, monto: 15000, estado: 'entregado' },
-  { id: 'VJ-013', fecha: '2026-04-09', origen: 'Av. Cabildo 1567, Belgrano', destino: 'Núñez, CABA', courierId: 3, empresaId: 4, bultos: 1, peso: 2.5, monto: 3200, estado: 'entregado' },
-  { id: 'VJ-014', fecha: '2026-04-08', origen: 'Ruta 4 Km 12, Lanús', destino: 'Banfield, Lomas de Zamora', courierId: 1, empresaId: 5, bultos: 4, peso: 18.0, monto: 9500, estado: 'entregado' },
-  { id: 'VJ-015', fecha: '2026-04-08', origen: 'Av. Corrientes 3200, CABA', destino: 'Flores, CABA', courierId: 3, empresaId: 3, bultos: 3, peso: 5.0, monto: 5800, estado: 'entregado' },
-  { id: 'VJ-016', fecha: '2026-04-08', origen: 'Av. Maipú 832, V. López', destino: 'Florida, V. López', courierId: 2, empresaId: 2, bultos: 2, peso: 9.5, monto: 7400, estado: 'entregado' },
-  { id: 'VJ-017', fecha: '2026-04-11', origen: 'Av. Mitre 1450, Avellaneda', destino: 'Wilde, Avellaneda', courierId: 1, empresaId: 1, bultos: 5, peso: 20.0, monto: 10800, estado: 'en curso' },
-  { id: 'VJ-018', fecha: '2026-04-11', origen: 'Av. Corrientes 3200, CABA', destino: 'San Telmo, CABA', courierId: 3, empresaId: 3, bultos: 1, peso: 0.8, monto: 2800, estado: 'pendiente' },
-  { id: 'VJ-019', fecha: '2026-04-07', origen: 'Av. Cabildo 1567, Belgrano', destino: 'Tigre Centro', courierId: 2, empresaId: 4, bultos: 3, peso: 14.0, monto: 11200, estado: 'entregado' },
-  { id: 'VJ-020', fecha: '2026-04-07', origen: 'Ruta 4 Km 12, Lanús', destino: 'Monte Grande, Esteban Echeverría', courierId: 1, empresaId: 5, bultos: 9, peso: 42.0, monto: 14800, estado: 'entregado' },
-];
-
-const zonesData = {
-  'CABA': [
-    'Palermo', 'Belgrano', 'Recoleta', 'Caballito', 'Flores', 'Almagro',
-    'Villa Crespo', 'Núñez', 'Colegiales', 'Villa Urquiza', 'Saavedra',
-    'Devoto', 'Villa del Parque', 'San Telmo', 'La Boca', 'Barracas',
-    'Constitución', 'Monserrat', 'San Nicolás', 'Retiro', 'Puerto Madero',
-    'Balvanera', 'Boedo', 'Parque Patricios', 'Liniers', 'Mataderos',
-    'Villa Lugano', 'Villa Soldati', 'Pompeya', 'Chacarita', 'Paternal',
-    'Agronomía', 'Parque Chas', 'Villa Pueyrredón', 'Versalles', 'Monte Castro'
-  ],
-  'Zona Sur': [
-    'Avellaneda', 'Quilmes', 'Lanús', 'Lomas de Zamora', 'Banfield',
-    'Sarandí', 'Wilde', 'Remedios de Escalada', 'Temperley', 'Adrogué',
-    'Burzaco', 'Berazategui', 'Florencio Varela', 'Almirante Brown',
-    'Esteban Echeverría', 'Monte Grande', 'Ezeiza', 'Cañuelas'
-  ],
-  'Zona Norte': [
-    'Vicente López', 'Olivos', 'Martínez', 'San Isidro', 'Beccar',
-    'San Fernando', 'Tigre', 'Don Torcuato', 'Florida', 'Munro',
-    'Villa Adelina', 'Boulogne', 'Pilar', 'Escobar', 'Pacheco'
-  ],
-  'Zona Oeste': [
-    'Morón', 'Haedo', 'Ramos Mejía', 'Caseros', 'San Martín',
-    'Tres de Febrero', 'Ituzaingó', 'Merlo', 'Moreno', 'Hurlingham',
-    'La Matanza', 'San Justo', 'González Catán', 'Isidro Casanova'
-  ]
-};
-
-// Generate zone trip counts and courier assignments
-const allZones = [];
-Object.entries(zonesData).forEach(([region, names]) => {
-  names.forEach(name => {
-    const assignedCourier = region === 'CABA' ? 3 : region === 'Zona Sur' ? 1 : region === 'Zona Norte' ? 2 :
-      [1,2,3][Math.floor(Math.random()*3)];
-    allZones.push({
-      name, region,
-      tripCount: Math.floor(Math.random() * 20) + 1,
-      courierId: assignedCourier
-    });
-  });
-});
-
-// ================================================================
-//  HELPERS
-// ================================================================
-
-function formatMoney(n) {
-  return '$' + n.toLocaleString('es-AR');
+function loadDB(){
+  try{ db=JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ db={}; }
+  if(!db.cadetes) initDemo();
 }
+function saveDB(){ localStorage.setItem(KEY,JSON.stringify(db)); }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,5); }
 
-function formatDate(d) {
-  const parts = d.split('-');
-  return `${parts[2]}/${parts[1]}`;
-}
+function initDemo(){
+  const today = new Date();
+  const d=(dt,n)=>{const r=new Date(dt);r.setDate(r.getDate()+n);return r.toISOString().split('T')[0];};
+  const sub=n=>d(today,-n);
+  const t=today.toISOString().split('T')[0];
 
-function estadoBadge(estado) {
-  const map = {
-    'pendiente': 'badge-pendiente',
-    'en curso': 'badge-encurso',
-    'entregado': 'badge-entregado',
-    'cancelado': 'badge-cancelado'
-  };
-  return `<span class="badge ${map[estado]}">${estado}</span>`;
-}
-
-function getCourier(id) { return couriers.find(c => c.id === id); }
-function getEmpresa(id) { return empresas.find(e => e.id === id); }
-
-// ================================================================
-//  NAVIGATION
-// ================================================================
-
-function navigateTo(page) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
-
-  document.querySelectorAll('.sidebar-nav-item').forEach(i => {
-    i.classList.toggle('active', i.dataset.page === page);
-  });
-  document.querySelectorAll('.bottom-nav-item').forEach(i => {
-    i.classList.toggle('active', i.dataset.page === page);
-  });
-}
-
-document.querySelectorAll('[data-page]').forEach(el => {
-  el.addEventListener('click', () => navigateTo(el.dataset.page));
-});
-
-// ================================================================
-//  MODAL
-// ================================================================
-
-function openModal(html) {
-  document.getElementById('modalContent').innerHTML = html;
-  document.getElementById('modalOverlay').classList.add('active');
-}
-
-function closeModal() {
-  document.getElementById('modalOverlay').classList.remove('active');
-}
-
-document.getElementById('modalOverlay').addEventListener('click', function(e) {
-  if (e.target === this) closeModal();
-});
-
-// ================================================================
-//  DASHBOARD
-// ================================================================
-
-function renderDashboard() {
-  const today = viajes.filter(v => v.fecha === '2026-04-11');
-  const entregadosHoy = today.filter(v => v.estado === 'entregado').length;
-  const pendientesHoy = today.filter(v => v.estado === 'pendiente' || v.estado === 'en curso').length;
-  const facturacionMes = empresas.reduce((s, e) => s + e.monthlyBilling, 0);
-
-  const kpis = [
-    { label: 'Viajes Hoy', value: today.length, change: '+12%', dir: 'up' },
-    { label: 'Entregas Completadas', value: entregadosHoy, change: '+8%', dir: 'up' },
-    { label: 'Pendientes', value: pendientesHoy, change: '-3%', dir: 'down' },
-    { label: 'Facturación Mes', value: formatMoney(facturacionMes), change: '+15%', dir: 'up' }
+  db.cadetes=[
+    {id:'cad1',nombre:'Martín Pérez',telefono:'11-4523-7890',vehiculo:'moto',zona:'Zona Sur',activo:true,salario:180000,vales:[{id:'v1',fecha:sub(5),concepto:'Adelanto',monto:5000},{id:'v2',fecha:sub(2),concepto:'Combustible',monto:3000}]},
+    {id:'cad2',nombre:'Lucas García',telefono:'11-3412-6789',vehiculo:'auto',zona:'Zona Norte',activo:true,salario:200000,vales:[{id:'v3',fecha:sub(8),concepto:'Adelanto',monto:8000}]},
+    {id:'cad3',nombre:'Facundo Torres',telefono:'11-2301-5678',vehiculo:'utilitario',zona:'CABA',activo:true,salario:220000,vales:[]}
   ];
 
-  document.getElementById('kpiGrid').innerHTML = kpis.map(k => `
-    <div class="kpi-card">
-      <div class="kpi-label">${k.label}</div>
-      <div class="kpi-value">${k.value}</div>
-      <div class="kpi-change ${k.dir}">${k.change} vs mes anterior</div>
+  db.empresas=[
+    {id:'e1',nombre:'Farmacia Central',cuit:'30-71234567-8',contacto:'Sra. Méndez',telefono:'11-4000-1234',direccion:'Av. Corrientes 2345, CABA',activa:true},
+    {id:'e2',nombre:'Distribuidora del Sur',cuit:'30-45678901-2',contacto:'Sr. Villalba',telefono:'11-4000-2345',direccion:'Av. Mitre 890, Avellaneda',activa:true},
+    {id:'e3',nombre:'Norte Express',cuit:'30-23456789-0',contacto:'Lic. Peralta',telefono:'11-4000-3456',direccion:'Maipú 456, San Isidro',activa:true},
+    {id:'e4',nombre:'TecnoShop',cuit:'30-67890123-4',contacto:'Ing. Castillo',telefono:'11-4000-4567',direccion:'Viamonte 789, CABA',activa:true},
+    {id:'e5',nombre:'Alimentos Premium',cuit:'30-89012345-6',contacto:'Sr. Ibáñez',telefono:'11-4000-5678',direccion:'Constitución 234, CABA',activa:true}
+  ];
+
+  db.zonas=[
+    {id:'z1',nombre:'Palermo',region:'CABA',precioBase:3500,precioPorBulto:700},
+    {id:'z2',nombre:'Belgrano',region:'CABA',precioBase:3000,precioPorBulto:600},
+    {id:'z3',nombre:'Recoleta',region:'CABA',precioBase:3500,precioPorBulto:700},
+    {id:'z4',nombre:'San Telmo',region:'CABA',precioBase:2800,precioPorBulto:560},
+    {id:'z5',nombre:'Caballito',region:'CABA',precioBase:2800,precioPorBulto:560},
+    {id:'z6',nombre:'Villa Crespo',region:'CABA',precioBase:2600,precioPorBulto:520},
+    {id:'z7',nombre:'Almagro',region:'CABA',precioBase:2700,precioPorBulto:540},
+    {id:'z8',nombre:'Boedo',region:'CABA',precioBase:2600,precioPorBulto:520},
+    {id:'z9',nombre:'Flores',region:'CABA',precioBase:2500,precioPorBulto:500},
+    {id:'z10',nombre:'Floresta',region:'CABA',precioBase:2500,precioPorBulto:500},
+    {id:'z11',nombre:'Mataderos',region:'CABA',precioBase:2400,precioPorBulto:480},
+    {id:'z12',nombre:'Saavedra',region:'CABA',precioBase:3000,precioPorBulto:600},
+    {id:'z13',nombre:'Núñez',region:'CABA',precioBase:3200,precioPorBulto:640},
+    {id:'z14',nombre:'Colegiales',region:'CABA',precioBase:3000,precioPorBulto:600},
+    {id:'z15',nombre:'Chacarita',region:'CABA',precioBase:2800,precioPorBulto:560},
+    {id:'z16',nombre:'Villa del Parque',region:'CABA',precioBase:2600,precioPorBulto:520},
+    {id:'z17',nombre:'Devoto',region:'CABA',precioBase:2700,precioPorBulto:540},
+    {id:'z18',nombre:'Monte Castro',region:'CABA',precioBase:2500,precioPorBulto:500},
+    {id:'z19',nombre:'Versalles',region:'CABA',precioBase:2400,precioPorBulto:480},
+    {id:'z20',nombre:'Villa Pueyrredón',region:'CABA',precioBase:2700,precioPorBulto:540},
+    {id:'z21',nombre:'Avellaneda',region:'GBA Sur',precioBase:4500,precioPorBulto:900},
+    {id:'z22',nombre:'Lanús',region:'GBA Sur',precioBase:4800,precioPorBulto:960},
+    {id:'z23',nombre:'Lomas de Zamora',region:'GBA Sur',precioBase:5000,precioPorBulto:1000},
+    {id:'z24',nombre:'Quilmes',region:'GBA Sur',precioBase:5500,precioPorBulto:1100},
+    {id:'z25',nombre:'Berazategui',region:'GBA Sur',precioBase:5800,precioPorBulto:1160},
+    {id:'z26',nombre:'Florencio Varela',region:'GBA Sur',precioBase:6000,precioPorBulto:1200},
+    {id:'z27',nombre:'Almirante Brown',region:'GBA Sur',precioBase:5200,precioPorBulto:1040},
+    {id:'z28',nombre:'Esteban Echeverría',region:'GBA Sur',precioBase:5500,precioPorBulto:1100},
+    {id:'z29',nombre:'Ezeiza',region:'GBA Sur',precioBase:6500,precioPorBulto:1300},
+    {id:'z30',nombre:'Cañuelas',region:'GBA Sur',precioBase:7000,precioPorBulto:1400},
+    {id:'z31',nombre:'Vicente López',region:'GBA Norte',precioBase:4000,precioPorBulto:800},
+    {id:'z32',nombre:'San Isidro',region:'GBA Norte',precioBase:4500,precioPorBulto:900},
+    {id:'z33',nombre:'San Fernando',region:'GBA Norte',precioBase:5000,precioPorBulto:1000},
+    {id:'z34',nombre:'Tigre',region:'GBA Norte',precioBase:5500,precioPorBulto:1100},
+    {id:'z35',nombre:'Malvinas Argentinas',region:'GBA Norte',precioBase:5000,precioPorBulto:1000},
+    {id:'z36',nombre:'José C. Paz',region:'GBA Norte',precioBase:5200,precioPorBulto:1040},
+    {id:'z37',nombre:'Escobar',region:'GBA Norte',precioBase:5800,precioPorBulto:1160},
+    {id:'z38',nombre:'Pilar',region:'GBA Norte',precioBase:6500,precioPorBulto:1300},
+    {id:'z39',nombre:'San Miguel',region:'GBA Norte',precioBase:5000,precioPorBulto:1000},
+    {id:'z40',nombre:'Moreno',region:'GBA Norte',precioBase:5500,precioPorBulto:1100},
+    {id:'z41',nombre:'Morón',region:'GBA Oeste',precioBase:4800,precioPorBulto:960},
+    {id:'z42',nombre:'Ituzaingó',region:'GBA Oeste',precioBase:5000,precioPorBulto:1000},
+    {id:'z43',nombre:'Hurlingham',region:'GBA Oeste',precioBase:5000,precioPorBulto:1000},
+    {id:'z44',nombre:'Merlo',region:'GBA Oeste',precioBase:5500,precioPorBulto:1100},
+    {id:'z45',nombre:'Marcos Paz',region:'GBA Oeste',precioBase:6000,precioPorBulto:1200}
+  ];
+
+  function mkViaje(id, empId, cadId, origen, zonaId, destDir, bultos, peso, diasAtras, estado, precio, pagador='empresa'){
+    const zona=db.zonas.find(z=>z.id===zonaId);
+    const p=precio||(zona?(zona.precioBase+zona.precioPorBulto*bultos):4000);
+    return {id,fecha:d(today,-diasAtras),empresaId:empId,cadeteId:cadId,origen,destino:{direccion:destDir,zona:zonaId},bultos,peso,precio:p,pagador,estado,horaPickup:'09:30',horaEntrega:estado==='entregado'?'11:15':null,observaciones:'',pagado:estado==='entregado'&&diasAtras>0};
+  }
+
+  db.viajes=[
+    mkViaje('vj001','e1','cad1','Av. Corrientes 2345, CABA','z22','Mitre 456',2,3,0,'en_curso'),
+    mkViaje('vj002','e2','cad2','Maipú 456, San Isidro','z1','Gurruchaga 789',1,1,0,'pendiente'),
+    mkViaje('vj003','e3','cad3','Viamonte 789, CABA','z23','San Martín 234',4,12,0,'en_curso'),
+    mkViaje('vj004','e4','cad1','Constitución 234, CABA','z24','Roca 567',3,5,0,'pendiente'),
+    mkViaje('vj005','e5','cad2','Av. Corrientes 100, CABA','z2','Cabildo 890',2,2,0,'entregado',null,'destinatario'),
+    mkViaje('vj006','e1','cad3','San Martín 1234, CABA','z21','Mitre 123',1,2,1,'entregado'),
+    mkViaje('vj007','e2','cad1','Belgrano 567, CABA','z3','Juncal 456',2,4,1,'entregado'),
+    mkViaje('vj008','e3','cad2','Corrientes 890, CABA','z31','Maipú 234',1,1,1,'entregado'),
+    mkViaje('vj009','e4','cad3','Rivadavia 123, CABA','z25','Mitre 789',3,8,2,'entregado'),
+    mkViaje('vj010','e5','cad1','Av. Santa Fe 456, CABA','z5','Rivadavia 123',2,3,2,'entregado'),
+    mkViaje('vj011','e1','cad2','Cabildo 789, CABA','z32','Florida 456',4,6,2,'entregado'),
+    mkViaje('vj012','e2','cad3','Thames 234, CABA','z41','Brown 789',1,2,3,'entregado'),
+    mkViaje('vj013','e3','cad1','Scalabrini Ortiz 567, CABA','z22','Alsina 234',2,3,3,'entregado'),
+    mkViaje('vj014','e4','cad2','Av. Corrientes 1500, CABA','z6','Dorrego 789',1,1,4,'entregado'),
+    mkViaje('vj015','e5','cad3','Av. Rivadavia 3456, CABA','z26','San Martín 123',3,9,4,'entregado'),
+    mkViaje('vj016','e1','cad1','Av. Independencia 789, CABA','z4','Defensa 567',2,4,5,'cancelado'),
+    mkViaje('vj017','e2','cad2','Av. Gaona 234, CABA','z42','Rivadavia 890',1,2,5,'entregado'),
+    mkViaje('vj018','e3','cad3','Av. Nazca 456, CABA','z7','Warnes 234',4,8,6,'entregado'),
+    mkViaje('vj019','e4','cad1','Av. Juan B. Justo 789, CABA','z33','Roca 123',2,3,6,'entregado'),
+    mkViaje('vj020','e5','cad2','Av. Forest 123, CABA','z8','Maza 456',1,1,7,'entregado')
+  ];
+
+  saveDB();
+}
+
+// HELPERS
+const ars=n=>'$'+Math.round(n||0).toLocaleString('es-AR');
+const fd=s=>{ if(!s) return '—'; const [y,m,dd]=s.split('-'); return `${dd}/${m}/${y}`; };
+const todayStr=()=>new Date().toISOString().split('T')[0];
+const veh={moto:'🏍',auto:'🚗',utilitario:'🚐'};
+const estadoLabel={pendiente:'Pendiente',en_curso:'En curso',entregado:'Entregado',cancelado:'Cancelado'};
+
+function toast(msg,type='info'){
+  const c=document.getElementById('toastContainer'),t=document.createElement('div');
+  t.className=`toast ${type}`;t.textContent=msg;c.appendChild(t);
+  setTimeout(()=>{t.style.cssText='opacity:0;transform:translateX(100%);transition:.3s';setTimeout(()=>t.remove(),300);},3000);
+}
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+function toggleDrawer(){
+  document.getElementById('mobileOverlay').classList.toggle('open');
+  document.getElementById('mobileDrawer').classList.toggle('open');
+}
+
+function goto(pg){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.mnav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+pg).classList.add('active');
+  document.querySelector(`.nav-item[onclick*="'${pg}'"]`)?.classList.add('active');
+  const mn=document.getElementById('mn-'+pg); if(mn) mn.classList.add('active');
+  renderPage(pg);
+}
+
+function renderPage(pg){
+  if(pg==='dashboard') renderDash();
+  else if(pg==='viajes') renderViajes();
+  else if(pg==='nuevo-viaje') renderNuevoViaje();
+  else if(pg==='cadetes') renderCadetes();
+  else if(pg==='empresas') renderEmpresas();
+  else if(pg==='zonas') renderZonas();
+  else if(pg==='liquidacion') renderLiquidacion();
+}
+
+// CHARTS
+let chV, chE;
+
+function renderDash(){
+  const today=todayStr();
+  document.getElementById('dashDate').textContent=new Date().toLocaleDateString('es-AR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const todayViajes=db.viajes.filter(v=>v.fecha===today);
+  const entHoy=todayViajes.filter(v=>v.estado==='entregado').length;
+  const enCurso=db.viajes.filter(v=>v.estado==='en_curso').length;
+  const facMes=db.viajes.filter(v=>v.fecha.startsWith(today.slice(0,7))&&v.estado!=='cancelado').reduce((s,v)=>s+v.precio,0);
+  document.getElementById('kpiGrid').innerHTML=`
+    <div class="kpi-card"><div class="kpi-label">Viajes hoy</div><div class="kpi-value">${todayViajes.length}</div><div class="kpi-sub">${todayViajes.filter(v=>v.estado==='pendiente').length} pendientes</div></div>
+    <div class="kpi-card"><div class="kpi-label">Entregados hoy</div><div class="kpi-value" style="color:var(--success)">${entHoy}</div><div class="kpi-sub">${todayViajes.filter(v=>v.estado==='en_curso').length} en curso</div></div>
+    <div class="kpi-card"><div class="kpi-label">En curso</div><div class="kpi-value" style="color:#a78bfa">${enCurso}</div><div class="kpi-sub">activos ahora</div></div>
+    <div class="kpi-card"><div class="kpi-label">Facturación mes</div><div class="kpi-value">${ars(facMes)}</div><div class="kpi-sub">${db.viajes.filter(v=>v.fecha.startsWith(today.slice(0,7))).length} viajes</div></div>`;
+
+  // Chart viajes 7 días
+  const days=Array.from({length:7},(_,i)=>{const d=new Date();d.setDate(d.getDate()-6+i);return d.toISOString().split('T')[0];});
+  const counts=days.map(d=>db.viajes.filter(v=>v.fecha===d&&v.estado!=='cancelado').length);
+  const labels=days.map(d=>{const[,, dd]=d.split('-');return dd;});
+  if(chV) chV.destroy();
+  chV=new Chart(document.getElementById('chartViajes'),{
+    type:'bar',data:{labels,datasets:[{data:counts,backgroundColor:'rgba(124,58,237,.6)',borderColor:'#7C3AED',borderWidth:1,borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#9B8FCC',font:{size:10}},grid:{color:'#2D2650'}},y:{ticks:{color:'#9B8FCC',font:{size:10},stepSize:1},grid:{color:'#2D2650'}}}}
+  });
+  if(chE) chE.destroy();
+  chE=new Chart(document.getElementById('chartEstados'),{
+    type:'doughnut',
+    data:{labels:['Pendiente','En curso','Entregado','Cancelado'],datasets:[{data:[db.viajes.filter(v=>v.estado==='pendiente').length,db.viajes.filter(v=>v.estado==='en_curso').length,db.viajes.filter(v=>v.estado==='entregado').length,db.viajes.filter(v=>v.estado==='cancelado').length],backgroundColor:['#F59E0B','#7C3AED','#22C55E','#EF4444'],borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom',labels:{color:'#9B8FCC',font:{size:11},padding:10}}}}
+  });
+
+  const activos=db.viajes.filter(v=>v.fecha===today&&['pendiente','en_curso'].includes(v.estado));
+  const el=document.getElementById('dashViajes');
+  el.innerHTML=activos.length===0?`<div class="empty"><div class="empty-icon">📦</div><div class="empty-text">Sin viajes activos hoy</div></div>`:
+    activos.map(v=>renderViajeCard(v,true)).join('');
+}
+
+function renderViajeCard(v, mini=false){
+  const emp=db.empresas.find(e=>e.id===v.empresaId);
+  const cad=db.cadetes.find(c=>c.id===v.cadeteId);
+  const zona=db.zonas.find(z=>z.id===v.destino?.zona);
+  return `<div class="viaje-card ${v.estado}" onclick="verViaje('${v.id}')">
+    <div class="viaje-id">VJ-${v.id.slice(-4).toUpperCase()}<br>${fd(v.fecha)}</div>
+    <div class="viaje-info">
+      <div class="viaje-ruta">${emp?.nombre||'—'}</div>
+      <div class="viaje-meta">${veh[cad?.vehiculo]||''} ${cad?.nombre||'—'} · ${zona?.nombre||v.destino?.direccion||'—'} · ${v.bultos} bulto${v.bultos!==1?'s':''}</div>
     </div>
-  `).join('');
+    <div style="text-align:right">
+      <div class="viaje-price">${ars(v.precio)}</div>
+      ${!mini?`<select class="status-select" onclick="event.stopPropagation()" onchange="cambiarEstado('${v.id}',this.value)">
+        <option value="pendiente" ${v.estado==='pendiente'?'selected':''}>Pendiente</option>
+        <option value="en_curso" ${v.estado==='en_curso'?'selected':''}>En curso</option>
+        <option value="entregado" ${v.estado==='entregado'?'selected':''}>Entregado</option>
+        <option value="cancelado" ${v.estado==='cancelado'?'selected':''}>Cancelado</option>
+      </select>`:`<span class="badge badge-${v.estado}">${estadoLabel[v.estado]}</span>`}
+    </div>
+  </div>`;
+}
 
-  // Ranking
-  const sorted = [...couriers].sort((a, b) => b.completedToday - a.completedToday);
-  document.getElementById('rankingCard').innerHTML = `
-    <h3>🏆 Top Cadetes — Hoy</h3>
-    ${sorted.map((c, i) => `
-      <div class="ranking-item">
-        <div class="ranking-pos">#${i + 1}</div>
-        <div class="ranking-avatar">${c.initials}</div>
-        <div class="ranking-info">
-          <div class="name">${c.name}</div>
-          <div class="detail">${c.vehicle} · ${c.zone}</div>
+function renderViajes(){
+  const q=(document.getElementById('searchViajes').value||'').toLowerCase();
+  const fe=document.getElementById('filterViajeEstado').value;
+  const fc=document.getElementById('filterViajeCadete');
+  if(fc.options.length<=1) db.cadetes.forEach(c=>{const o=document.createElement('option');o.value=c.id;o.textContent=c.nombre;fc.appendChild(o);});
+  const fcv=fc.value;
+  const ff=document.getElementById('filterViajeFecha').value;
+  let list=[...db.viajes].sort((a,b)=>b.fecha.localeCompare(a.fecha)).filter(v=>{
+    const emp=db.empresas.find(e=>e.id===v.empresaId);
+    const zona=db.zonas.find(z=>z.id===v.destino?.zona);
+    const txt=`${emp?.nombre} ${v.origen} ${zona?.nombre} ${v.destino?.direccion}`.toLowerCase();
+    return (!q||txt.includes(q))&&(!fe||v.estado===fe)&&(!fcv||v.cadeteId===fcv)&&(!ff||v.fecha===ff);
+  });
+  const el=document.getElementById('viajesList');
+  if(!list.length){el.innerHTML='<div class="empty"><div class="empty-icon">🚐</div><div class="empty-text">Sin viajes</div></div>';return;}
+  el.innerHTML=list.map(v=>renderViajeCard(v)).join('');
+}
+
+function cambiarEstado(viajeId, nuevoEstado){
+  const v=db.viajes.find(x=>x.id===viajeId);
+  if(!v) return;
+  v.estado=nuevoEstado;
+  if(nuevoEstado==='entregado') v.horaEntrega=new Date().toTimeString().slice(0,5);
+  saveDB(); toast(`Estado → ${estadoLabel[nuevoEstado]}`,'success');
+}
+
+function verViaje(id){
+  const v=db.viajes.find(x=>x.id===id);
+  const emp=db.empresas.find(e=>e.id===v.empresaId);
+  const cad=db.cadetes.find(c=>c.id===v.cadeteId);
+  const zona=db.zonas.find(z=>z.id===v.destino?.zona);
+  document.getElementById('dvTitle').textContent=`VJ-${v.id.slice(-4).toUpperCase()} — ${emp?.nombre}`;
+  document.getElementById('dvBody').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;margin-bottom:16px">
+      <div><div class="form-label">Empresa</div><div>${emp?.nombre}</div></div>
+      <div><div class="form-label">Estado</div><div><span class="badge badge-${v.estado}">${estadoLabel[v.estado]}</span></div></div>
+      <div><div class="form-label">Cadete</div><div>${veh[cad?.vehiculo]} ${cad?.nombre}</div></div>
+      <div><div class="form-label">Fecha</div><div>${fd(v.fecha)}</div></div>
+      <div><div class="form-label">Origen</div><div>${v.origen}</div></div>
+      <div><div class="form-label">Destino</div><div>${v.destino?.direccion}, ${zona?.nombre}</div></div>
+      <div><div class="form-label">Bultos / Peso</div><div>${v.bultos} bultos · ${v.peso} kg</div></div>
+      <div><div class="form-label">Precio</div><div class="mono" style="font-size:16px;color:var(--accent)">${ars(v.precio)}</div></div>
+      <div><div class="form-label">Paga</div><div>${v.pagador==='empresa'?'Empresa':'Destinatario'}</div></div>
+      <div><div class="form-label">Hora pickup</div><div>${v.horaPickup||'—'}</div></div>
+      ${v.horaEntrega?`<div><div class="form-label">Hora entrega</div><div>${v.horaEntrega}</div></div>`:''}
+      ${v.observaciones?`<div style="grid-column:1/-1"><div class="form-label">Observaciones</div><div>${v.observaciones}</div></div>`:''}
+    </div>
+    <div class="divider"></div>
+    <div class="form-label" style="margin-bottom:8px">Cambiar estado</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      ${['pendiente','en_curso','entregado','cancelado'].map(s=>`<button class="btn ${v.estado===s?'btn-primary':'btn-ghost'} btn-sm" onclick="cambiarEstado('${v.id}','${s}');closeModal('modalDetalleViaje');renderPage(document.querySelector('.page.active').id.replace('page-',''))">${estadoLabel[s]}</button>`).join('')}
+    </div>`;
+  openModal('modalDetalleViaje');
+}
+
+// NUEVO VIAJE
+function renderNuevoViaje(){
+  const ns=document.getElementById('nv_empresa'), nc=document.getElementById('nv_cadete'), nz=document.getElementById('nv_zona');
+  ns.innerHTML='<option value="">Seleccionar empresa...</option>'+db.empresas.map(e=>`<option value="${e.id}">${e.nombre}</option>`).join('');
+  nc.innerHTML='<option value="">Seleccionar cadete...</option>'+db.cadetes.map(c=>`<option value="${c.id}">${veh[c.vehiculo]} ${c.nombre}</option>`).join('');
+  nz.innerHTML='<option value="">Seleccionar zona...</option>'+db.zonas.map(z=>`<option value="${z.id}">${z.nombre} (${z.region})</option>`).join('');
+  document.getElementById('nv_fecha').value=todayStr();
+}
+
+function calcPrecio(){
+  const zonaId=document.getElementById('nv_zona').value;
+  const bultos=parseInt(document.getElementById('nv_bultos').value)||1;
+  const zona=db.zonas.find(z=>z.id===zonaId);
+  const prev=document.getElementById('nv_preview');
+  if(!zona){prev.style.display='none';return;}
+  const precio=zona.precioBase+zona.precioPorBulto*bultos;
+  document.getElementById('nv_precio').value=precio;
+  prev.style.display='block';
+  document.getElementById('nv_precioPreview').textContent=ars(precio);
+  document.getElementById('nv_precioDetalle').textContent=`Base: ${ars(zona.precioBase)} + ${bultos} bulto${bultos!==1?'s':''} × ${ars(zona.precioPorBulto)} = ${ars(precio)}`;
+}
+
+function guardarViaje(){
+  const empId=document.getElementById('nv_empresa').value;
+  const cadId=document.getElementById('nv_cadete').value;
+  const origen=document.getElementById('nv_origen').value.trim();
+  const destDir=document.getElementById('nv_destDir').value.trim();
+  const zonaId=document.getElementById('nv_zona').value;
+  const bultos=parseInt(document.getElementById('nv_bultos').value)||1;
+  const peso=parseFloat(document.getElementById('nv_peso').value)||1;
+  const precio=parseFloat(document.getElementById('nv_precio').value)||0;
+  const pagador=document.getElementById('nv_pagador').value;
+  const fecha=document.getElementById('nv_fecha').value||todayStr();
+  const hora=document.getElementById('nv_hora').value||'09:00';
+  const obs=document.getElementById('nv_obs').value.trim();
+  if(!empId||!cadId||!origen||!destDir||!zonaId){toast('Completá todos los campos obligatorios','error');return;}
+  const id=uid();
+  db.viajes.unshift({id,fecha,empresaId:empId,cadeteId:cadId,origen,destino:{direccion:destDir,zona:zonaId},bultos,peso,precio,pagador,estado:'pendiente',horaPickup:hora,horaEntrega:null,observaciones:obs,pagado:false});
+  saveDB();
+  // Reset form
+  ['nv_empresa','nv_cadete','nv_zona'].forEach(id=>document.getElementById(id).value='');
+  ['nv_origen','nv_destDir','nv_obs'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('nv_bultos').value='1';
+  document.getElementById('nv_peso').value='1';
+  document.getElementById('nv_precio').value='';
+  document.getElementById('nv_preview').style.display='none';
+  toast(`Viaje VJ-${id.slice(-4).toUpperCase()} creado`,'success');
+  goto('viajes');
+}
+
+// CADETES
+function renderCadetes(){
+  const mes=todayStr().slice(0,7);
+  const el=document.getElementById('cadetesList');
+  el.innerHTML=db.cadetes.map(cad=>{
+    const viajesMes=db.viajes.filter(v=>v.cadeteId===cad.id&&v.fecha.startsWith(mes)&&v.estado!=='cancelado');
+    const viajesHoy=db.viajes.filter(v=>v.cadeteId===cad.id&&v.fecha===todayStr());
+    const entHoy=viajesHoy.filter(v=>v.estado==='entregado').length;
+    const efic=viajesHoy.length?Math.round(entHoy/viajesHoy.length*100):0;
+    const totalVales=cad.vales.reduce((s,v)=>s+v.monto,0);
+    return `<div class="card">
+      <div class="card-row">
+        <div>
+          <div class="card-title">${veh[cad.vehiculo]} ${cad.nombre}</div>
+          <div class="card-sub">📍 ${cad.zona} · 📞 ${cad.telefono}</div>
         </div>
-        <div class="ranking-value">${c.completedToday} viajes</div>
+        <div style="text-align:right">
+          <div style="font-size:12px;color:var(--text-muted)">${viajesMes.length} viajes este mes</div>
+          <div class="mono" style="font-size:14px;color:var(--success)">${ars(viajesMes.reduce((s,v)=>s+v.precio,0))}</div>
+        </div>
       </div>
-    `).join('')}
-  `;
+      <div class="divider"></div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center">
+        <div><div class="summary-label">Hoy</div><div style="font-weight:600">${entHoy}/${viajesHoy.length} entregados</div></div>
+        <div><div class="summary-label">Eficiencia</div><div style="font-weight:600;color:${efic>=80?'var(--success)':efic>=50?'var(--warning)':'var(--danger)'}">${efic}%</div></div>
+        <div><div class="summary-label">Vales</div><div style="font-weight:600;color:var(--warning)">${ars(totalVales)}</div></div>
+        <div><div class="summary-label">Salario</div><div style="font-weight:600">${ars(cad.salario)}</div></div>
+        <div style="margin-left:auto;display:flex;gap:6px">
+          <button class="btn btn-ghost btn-sm" onclick="verCadete('${cad.id}')">Detalle</button>
+          <button class="btn btn-warning btn-sm" onclick="abrirVale('${cad.id}')">+ Vale</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
-function renderCharts() {
-  const days = ['Lun 7', 'Mar 8', 'Mié 9', 'Jue 10', 'Vie 11', 'Sáb 12', 'Dom 13'];
-  const tripsByDay = [5, 4, 6, 5, 7, 0, 0]; // demo
+function verCadete(id){
+  const cad=db.cadetes.find(c=>c.id===id);
+  const mes=todayStr().slice(0,7);
+  const viajesMes=db.viajes.filter(v=>v.cadeteId===id&&v.fecha.startsWith(mes)&&v.estado!=='cancelado');
+  const totalVales=cad.vales.reduce((s,v)=>s+v.monto,0);
+  document.getElementById('detCadTitle').textContent=`${veh[cad.vehiculo]} ${cad.nombre}`;
+  document.getElementById('detCadBody').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;font-size:13px">
+      <div><div class="form-label">Vehículo</div><div>${veh[cad.vehiculo]} ${cad.vehiculo}</div></div>
+      <div><div class="form-label">Zona</div><div>${cad.zona}</div></div>
+      <div><div class="form-label">Teléfono</div><div>${cad.telefono}</div></div>
+      <div><div class="form-label">Salario base</div><div class="mono">${ars(cad.salario)}</div></div>
+    </div>
+    <div class="summary-bar">
+      <div class="summary-item"><div class="summary-label">Viajes mes</div><div class="summary-value">${viajesMes.length}</div></div>
+      <div class="summary-item"><div class="summary-label">Facturado</div><div class="summary-value">${ars(viajesMes.reduce((s,v)=>s+v.precio,0))}</div></div>
+      <div class="summary-item"><div class="summary-label">Vales</div><div class="summary-value" style="color:var(--warning)">${ars(totalVales)}</div></div>
+      <div class="summary-item"><div class="summary-label">A pagar</div><div class="summary-value" style="color:var(--success)">${ars(cad.salario-totalVales)}</div></div>
+    </div>
+    <div class="divider"></div>
+    <div style="font-weight:600;margin-bottom:10px;font-family:'Space Grotesk',sans-serif">Vales / Adelantos</div>
+    ${!cad.vales.length?'<div class="empty" style="padding:16px"><div class="empty-text">Sin vales</div></div>':
+    cad.vales.map(v=>`<div style="display:flex;align-items:center;gap:12px;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;margin-bottom:6px">
+      <div style="flex:1;font-size:13px">${v.concepto}</div>
+      <div style="font-size:12px;color:var(--text-muted)">${fd(v.fecha)}</div>
+      <div class="mono" style="color:var(--warning)">${ars(v.monto)}</div>
+      <button class="btn btn-danger btn-sm" onclick="eliminarVale('${cad.id}','${v.id}')">✕</button>
+    </div>`).join('')}
+    <div style="margin-top:12px;display:flex;gap:8px">
+      <button class="btn btn-warning btn-sm" onclick="closeModal('modalDetCadete');abrirVale('${cad.id}')">+ Agregar vale</button>
+      <button class="btn btn-ghost btn-sm" onclick="editarCadete('${cad.id}')">✏ Editar</button>
+    </div>`;
+  openModal('modalDetCadete');
+}
 
-  Chart.defaults.color = '#737373';
-  Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
-  Chart.defaults.font.family = "'Inter', sans-serif";
+function editarCadete(id){
+  const cad=db.cadetes.find(c=>c.id===id);
+  document.getElementById('edit_cadId').value=id;
+  document.getElementById('cad_nom').value=cad.nombre;
+  document.getElementById('cad_tel').value=cad.telefono;
+  document.getElementById('cad_veh').value=cad.vehiculo;
+  document.getElementById('cad_zona').value=cad.zona;
+  document.getElementById('cad_salario').value=cad.salario;
+  document.getElementById('cadModalTitle').textContent='Editar Cadete';
+  closeModal('modalDetCadete'); openModal('modalNuevoCadete');
+}
 
-  new Chart(document.getElementById('chartBar'), {
-    type: 'bar',
-    data: {
-      labels: days,
-      datasets: [{
-        label: 'Viajes',
-        data: tripsByDay,
-        backgroundColor: 'rgba(16,185,129,0.7)',
-        hoverBackgroundColor: '#10B981',
-        borderRadius: 6,
-        borderSkipped: false,
-        maxBarThickness: 40,
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: { stepSize: 2, font: { family: "'JetBrains Mono', monospace", size: 11 } },
-          grid: { color: 'rgba(255,255,255,0.04)' }
-        },
-        x: {
-          ticks: { font: { size: 11 } },
-          grid: { display: false }
-        }
-      }
-    }
-  });
-
-  const statusCounts = {
-    'Entregado': viajes.filter(v => v.estado === 'entregado').length,
-    'En Curso': viajes.filter(v => v.estado === 'en curso').length,
-    'Pendiente': viajes.filter(v => v.estado === 'pendiente').length,
-    'Cancelado': viajes.filter(v => v.estado === 'cancelado').length,
+function guardarCadete(){
+  const eid=document.getElementById('edit_cadId').value;
+  const cad={
+    id:eid||uid(),nombre:document.getElementById('cad_nom').value.trim(),telefono:document.getElementById('cad_tel').value.trim(),
+    vehiculo:document.getElementById('cad_veh').value,zona:document.getElementById('cad_zona').value.trim(),
+    activo:true,salario:parseFloat(document.getElementById('cad_salario').value)||0,
+    vales:eid?db.cadetes.find(c=>c.id===eid)?.vales||[]:[]
   };
-
-  new Chart(document.getElementById('chartDonut'), {
-    type: 'doughnut',
-    data: {
-      labels: Object.keys(statusCounts),
-      datasets: [{
-        data: Object.values(statusCounts),
-        backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#EF4444'],
-        borderWidth: 0,
-        hoverOffset: 6
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      cutout: '65%',
-      plugins: {
-        legend: {
-          position: 'bottom',
-          labels: {
-            padding: 16,
-            usePointStyle: true,
-            pointStyleWidth: 8,
-            font: { size: 12 }
-          }
-        }
-      }
-    }
-  });
+  if(!cad.nombre){toast('Nombre requerido','error');return;}
+  if(eid){const idx=db.cadetes.findIndex(c=>c.id===eid);db.cadetes[idx]=cad;}
+  else db.cadetes.push(cad);
+  saveDB(); closeModal('modalNuevoCadete');
+  document.getElementById('edit_cadId').value='';
+  document.getElementById('cadModalTitle').textContent='Nuevo Cadete';
+  renderCadetes(); populateSelects();
+  toast(eid?'Cadete actualizado':'Cadete guardado','success');
 }
 
-// ================================================================
-//  VIAJES
-// ================================================================
-
-let viajesFilter = { estado: '', courier: '', fecha: '' };
-
-function renderViajesFilters() {
-  document.getElementById('viajesFilters').innerHTML = `
-    <select class="filter-select" id="filterEstado">
-      <option value="">Todos los estados</option>
-      <option value="pendiente">Pendiente</option>
-      <option value="en curso">En Curso</option>
-      <option value="entregado">Entregado</option>
-      <option value="cancelado">Cancelado</option>
-    </select>
-    <select class="filter-select" id="filterCourier">
-      <option value="">Todos los cadetes</option>
-      ${couriers.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
-    </select>
-    <input type="date" class="filter-input" id="filterFecha" value="">
-  `;
-
-  document.getElementById('filterEstado').addEventListener('change', e => {
-    viajesFilter.estado = e.target.value; renderViajes();
-  });
-  document.getElementById('filterCourier').addEventListener('change', e => {
-    viajesFilter.courier = e.target.value; renderViajes();
-  });
-  document.getElementById('filterFecha').addEventListener('change', e => {
-    viajesFilter.fecha = e.target.value; renderViajes();
-  });
+function abrirVale(cadId){
+  document.getElementById('vale_cadId').value=cadId;
+  document.getElementById('vale_fecha').value=todayStr();
+  document.getElementById('vale_concepto').value='';
+  document.getElementById('vale_monto').value='';
+  openModal('modalVale');
 }
 
-function getFilteredViajes() {
-  return viajes.filter(v => {
-    if (viajesFilter.estado && v.estado !== viajesFilter.estado) return false;
-    if (viajesFilter.courier && v.courierId !== parseInt(viajesFilter.courier)) return false;
-    if (viajesFilter.fecha && v.fecha !== viajesFilter.fecha) return false;
-    return true;
-  });
+function guardarVale(){
+  const cadId=document.getElementById('vale_cadId').value;
+  const cad=db.cadetes.find(c=>c.id===cadId);
+  const v={id:uid(),fecha:document.getElementById('vale_fecha').value,concepto:document.getElementById('vale_concepto').value.trim(),monto:parseFloat(document.getElementById('vale_monto').value)||0};
+  if(!v.concepto||!v.monto){toast('Completá todos los campos','error');return;}
+  cad.vales.push(v); saveDB(); closeModal('modalVale');
+  toast('Vale registrado','success'); renderCadetes();
 }
 
-function renderViajes() {
-  const filtered = getFilteredViajes();
+function eliminarVale(cadId, valeId){
+  const cad=db.cadetes.find(c=>c.id===cadId);
+  cad.vales=cad.vales.filter(v=>v.id!==valeId);
+  saveDB(); closeModal('modalDetCadete');
+  toast('Vale eliminado','info'); renderCadetes();
+}
 
-  // Desktop table
-  document.getElementById('viajesTableBody').innerHTML = filtered.map(v => {
-    const c = getCourier(v.courierId);
-    const e = getEmpresa(v.empresaId);
+// EMPRESAS
+function renderEmpresas(){
+  const q=(document.getElementById('searchEmpresas').value||'').toLowerCase();
+  const mes=todayStr().slice(0,7);
+  const list=db.empresas.filter(e=>!q||e.nombre.toLowerCase().includes(q)||e.cuit.includes(q));
+  const el=document.getElementById('empresasList');
+  if(!list.length){el.innerHTML='<div class="empty"><div class="empty-icon">🏢</div><div class="empty-text">Sin empresas</div></div>';return;}
+  el.innerHTML=list.map(emp=>{
+    const viajes=db.viajes.filter(v=>v.empresaId===emp.id&&v.estado!=='cancelado');
+    const mes2=viajes.filter(v=>v.fecha.startsWith(mes));
+    const facMes=mes2.reduce((s,v)=>s+v.precio,0);
+    return `<div class="card">
+      <div class="card-row">
+        <div><div class="card-title">${emp.nombre}</div><div class="card-sub">CUIT: ${emp.cuit} · ${emp.contacto} · ${emp.telefono}</div></div>
+        <div style="text-align:right"><div style="font-size:12px;color:var(--text-muted)">${mes2.length} viajes este mes</div><div class="mono" style="font-size:15px;color:var(--accent)">${ars(facMes)}</div></div>
+      </div>
+      <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="verEmpresa('${emp.id}')">Ver detalle</button>
+        <button class="btn btn-primary btn-sm" onclick="goto('nuevo-viaje')">+ Nuevo viaje</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+let curEmpId=null;
+function verEmpresa(id){
+  curEmpId=id;
+  const emp=db.empresas.find(e=>e.id===id);
+  document.getElementById('detEmpTitle').textContent=emp.nombre;
+  const viajes=[...db.viajes].filter(v=>v.empresaId===id).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  // Group by month
+  const byMes={};
+  viajes.forEach(v=>{ const m=v.fecha.slice(0,7); if(!byMes[m]) byMes[m]=[]; byMes[m].push(v); });
+  document.getElementById('detEmpBody').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;margin-bottom:16px">
+      <div><div class="form-label">CUIT</div><div class="mono">${emp.cuit}</div></div>
+      <div><div class="form-label">Contacto</div><div>${emp.contacto}</div></div>
+      <div><div class="form-label">Teléfono</div><div>${emp.telefono}</div></div>
+      <div><div class="form-label">Dirección</div><div>${emp.direccion}</div></div>
+    </div>
+    <div class="divider"></div>
+    <div style="font-weight:600;margin-bottom:12px;font-family:'Space Grotesk',sans-serif">Cuenta Corriente por mes</div>
+    ${Object.entries(byMes).sort((a,b)=>b[0].localeCompare(a[0])).map(([mes, vs])=>{
+      const total=vs.reduce((s,v)=>s+v.precio,0);
+      const [y,m]=mes.split('-');
+      const mesNombre=new Date(parseInt(y),parseInt(m)-1).toLocaleDateString('es-AR',{month:'long',year:'numeric'});
+      return `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+          <div style="font-weight:600;font-family:'Space Grotesk',sans-serif;text-transform:capitalize">${mesNombre}</div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span class="mono" style="font-size:15px;color:var(--accent)">${ars(total)}</span>
+            <span style="font-size:12px;color:var(--text-muted)">${vs.length} viajes</span>
+          </div>
+        </div>
+        ${vs.slice(0,5).map(v=>{
+          const cad=db.cadetes.find(c=>c.id===v.cadeteId);
+          const zona=db.zonas.find(z=>z.id===v.destino?.zona);
+          return `<div style="display:flex;justify-content:space-between;font-size:12px;padding:6px 0;border-top:1px solid var(--border)">
+            <span style="color:var(--text-muted)">${fd(v.fecha)} · ${cad?.nombre}</span>
+            <span>${zona?.nombre||v.destino?.direccion} · ${v.bultos}b</span>
+            <span class="mono">${ars(v.precio)}</span>
+            <span class="badge badge-${v.estado}" style="font-size:10px">${estadoLabel[v.estado]}</span>
+          </div>`;
+        }).join('')}
+        ${vs.length>5?`<div style="font-size:11px;color:var(--text-muted);margin-top:6px">+${vs.length-5} más...</div>`:''}
+      </div>`;
+    }).join('')}`;
+  openModal('modalDetEmpresa');
+}
+
+function guardarEmpresa(){
+  const eid=document.getElementById('edit_empId').value;
+  const emp={id:eid||uid(),nombre:document.getElementById('emp_nom').value.trim(),cuit:document.getElementById('emp_cuit').value.trim(),contacto:document.getElementById('emp_contacto').value.trim(),telefono:document.getElementById('emp_tel').value.trim(),direccion:document.getElementById('emp_dir').value.trim(),activa:true};
+  if(!emp.nombre){toast('Nombre requerido','error');return;}
+  if(eid){const idx=db.empresas.findIndex(e=>e.id===eid);db.empresas[idx]=emp;}
+  else db.empresas.push(emp);
+  saveDB(); closeModal('modalNuevaEmpresa');
+  document.getElementById('edit_empId').value='';
+  document.getElementById('empModalTitle').textContent='Nueva Empresa';
+  renderEmpresas(); populateSelects();
+  toast(eid?'Empresa actualizada':'Empresa guardada','success');
+}
+
+function exportEmpresaExcel(){
+  if(!curEmpId||typeof XLSX==='undefined'){toast('No disponible','error');return;}
+  const emp=db.empresas.find(e=>e.id===curEmpId);
+  const data=db.viajes.filter(v=>v.empresaId===curEmpId).map(v=>{
+    const cad=db.cadetes.find(c=>c.id===v.cadeteId);
+    const zona=db.zonas.find(z=>z.id===v.destino?.zona);
+    return {'ID':`VJ-${v.id.slice(-4).toUpperCase()}`,'Fecha':fd(v.fecha),'Cadete':cad?.nombre,'Origen':v.origen,'Zona':zona?.nombre,'Bultos':v.bultos,'Peso kg':v.peso,'Precio':v.precio,'Estado':estadoLabel[v.estado]};
+  });
+  const wb=XLSX.utils.book_new(), ws=XLSX.utils.json_to_sheet(data);
+  XLSX.utils.book_append_sheet(wb,ws,'Viajes');
+  XLSX.writeFile(wb,`viajes_${emp.nombre.replace(/\s/g,'_')}.xlsx`);
+  toast('Excel descargado','success');
+}
+
+// ZONAS
+function renderZonas(){
+  const q=(document.getElementById('searchZonas').value||'').toLowerCase();
+  const fr=document.getElementById('filterRegion').value;
+  const list=db.zonas.filter(z=>(!q||z.nombre.toLowerCase().includes(q))&&(!fr||z.region===fr));
+  const el=document.getElementById('zonasList');
+  const regionColor={CABA:'rgba(124,58,237,.15)',  'GBA Sur':'rgba(239,68,68,.1)','GBA Norte':'rgba(34,197,94,.1)','GBA Oeste':'rgba(245,158,11,.1)'};
+  el.innerHTML=list.map(z=>`
+    <div class="zona-row" id="zrow-${z.id}">
+      <div class="zona-name">${z.nombre}</div>
+      <div><span class="zona-region" style="background:${regionColor[z.region]||'var(--surface2)'}">${z.region}</span></div>
+      <div class="zona-price" id="zbase-${z.id}">${ars(z.precioBase)}</div>
+      <div class="zona-price" id="zbulto-${z.id}">${ars(z.precioPorBulto)}</div>
+      <div><button class="btn btn-ghost btn-sm" onclick="editarZona('${z.id}')">✏</button></div>
+    </div>`).join('');
+}
+
+function editarZona(id){
+  const z=db.zonas.find(x=>x.id===id);
+  const row=document.getElementById('zrow-'+id);
+  const baseEl=document.getElementById('zbase-'+id);
+  const bultoEl=document.getElementById('zbulto-'+id);
+  if(baseEl.querySelector('input')) return;
+  baseEl.innerHTML=`<input class="zona-edit-input" value="${z.precioBase}" id="einp-base-${id}" onkeydown="if(event.key==='Enter')guardarZonaPrecio('${id}')">`;
+  bultoEl.innerHTML=`<input class="zona-edit-input" value="${z.precioPorBulto}" id="einp-bulto-${id}" onkeydown="if(event.key==='Enter')guardarZonaPrecio('${id}')"> <button class="btn btn-primary btn-sm" onclick="guardarZonaPrecio('${id}')">✓</button>`;
+  document.getElementById(`einp-base-${id}`)?.focus();
+}
+
+function guardarZonaPrecio(id){
+  const z=db.zonas.find(x=>x.id===id);
+  z.precioBase=parseFloat(document.getElementById(`einp-base-${id}`).value)||z.precioBase;
+  z.precioPorBulto=parseFloat(document.getElementById(`einp-bulto-${id}`).value)||z.precioPorBulto;
+  saveDB(); renderZonas(); toast('Precio actualizado','success');
+}
+
+function guardarZona(){
+  const z={id:uid(),nombre:document.getElementById('zona_nom').value.trim(),region:document.getElementById('zona_reg').value,precioBase:parseFloat(document.getElementById('zona_base').value)||0,precioPorBulto:parseFloat(document.getElementById('zona_bulto').value)||0};
+  if(!z.nombre){toast('Nombre requerido','error');return;}
+  db.zonas.push(z); saveDB(); closeModal('modalNuevaZona'); renderZonas();
+  ['zona_nom','zona_base','zona_bulto'].forEach(id=>document.getElementById(id).value='');
+  toast('Zona guardada','success');
+}
+
+// LIQUIDACIÓN
+function renderLiquidacion(){
+  const mes=document.getElementById('liquidMes').value||todayStr().slice(0,7);
+  const viajesMes=db.viajes.filter(v=>v.fecha.startsWith(mes)&&v.estado!=='cancelado');
+
+  const totViajes=viajesMes.reduce((s,v)=>s+v.precio,0);
+  const totSalarios=db.cadetes.reduce((s,c)=>s+c.salario,0);
+  const totVales=db.cadetes.reduce((s,c)=>s+c.vales.filter(v=>v.fecha.startsWith(mes)).reduce((ss,vv)=>ss+vv.monto,0),0);
+  const margen=totViajes-totSalarios-totVales;
+  document.getElementById('liquidSummary').innerHTML=`
+    <div class="summary-item"><div class="summary-label">Facturación</div><div class="summary-value" style="color:var(--success)">${ars(totViajes)}</div></div>
+    <div class="summary-item"><div class="summary-label">Salarios</div><div class="summary-value" style="color:var(--danger)">${ars(totSalarios)}</div></div>
+    <div class="summary-item"><div class="summary-label">Vales</div><div class="summary-value" style="color:var(--warning)">${ars(totVales)}</div></div>
+    <div class="summary-item"><div class="summary-label">Margen</div><div class="summary-value" style="color:${margen>=0?'var(--success)':'var(--danger)'}">${ars(margen)}</div></div>`;
+
+  // Cadetes
+  document.getElementById('liquidCadetes').innerHTML=db.cadetes.map(cad=>{
+    const vMes=viajesMes.filter(v=>v.cadeteId===cad.id);
+    const valesM=cad.vales.filter(v=>v.fecha.startsWith(mes)).reduce((s,v)=>s+v.monto,0);
+    const aPagar=cad.salario-valesM;
     return `<tr>
-      <td><span class="mono text-emerald fw-600">${v.id}</span></td>
-      <td>${formatDate(v.fecha)}</td>
-      <td>${v.origen}</td>
-      <td>${v.destino}</td>
-      <td>${c.name}</td>
-      <td>${e.name}</td>
-      <td class="mono">${v.bultos}</td>
-      <td class="mono">${v.peso} kg</td>
-      <td class="mono fw-600">${formatMoney(v.monto)}</td>
-      <td>${estadoBadge(v.estado)}</td>
+      <td><div style="font-weight:600">${veh[cad.vehiculo]} ${cad.nombre}</div><div style="font-size:11px;color:var(--text-muted)">${cad.zona}</div></td>
+      <td>${vMes.length}</td>
+      <td class="mono">${ars(vMes.reduce((s,v)=>s+v.precio,0))}</td>
+      <td class="mono">${ars(cad.salario)}</td>
+      <td class="mono" style="color:var(--warning)">${ars(valesM)}</td>
+      <td class="mono" style="color:var(--success);font-weight:600">${ars(aPagar)}</td>
     </tr>`;
   }).join('');
 
-  // Mobile cards
-  document.getElementById('viajesMobileCards').innerHTML = filtered.map(v => {
-    const c = getCourier(v.courierId);
-    const e = getEmpresa(v.empresaId);
-    return `<div class="mobile-card">
-      <div class="mc-header">
-        <span class="mc-id">${v.id}</span>
-        ${estadoBadge(v.estado)}
-      </div>
-      <div class="mc-row"><span class="mc-label">Fecha</span><span>${formatDate(v.fecha)}</span></div>
-      <div class="mc-row"><span class="mc-label">Origen</span><span style="text-align:right;max-width:60%">${v.origen}</span></div>
-      <div class="mc-row"><span class="mc-label">Destino</span><span style="text-align:right;max-width:60%">${v.destino}</span></div>
-      <div class="mc-row"><span class="mc-label">Cadete</span><span>${c.name}</span></div>
-      <div class="mc-row"><span class="mc-label">Empresa</span><span>${e.name}</span></div>
-      <div class="mc-row"><span class="mc-label">Bultos / Peso</span><span class="mono">${v.bultos} · ${v.peso} kg</span></div>
-      <div class="mc-row"><span class="mc-label">Monto</span><span class="mono fw-600 text-emerald">${formatMoney(v.monto)}</span></div>
-    </div>`;
+  // Empresas
+  document.getElementById('liquidEmpresas').innerHTML=db.empresas.map(emp=>{
+    const vEmp=viajesMes.filter(v=>v.empresaId===emp.id);
+    const total=vEmp.reduce((s,v)=>s+v.precio,0);
+    return `<tr>
+      <td><div style="font-weight:600">${emp.nombre}</div><div style="font-size:11px;color:var(--text-muted)">${emp.contacto}</div></td>
+      <td>${vEmp.length}</td>
+      <td class="mono">${ars(total)}</td>
+      <td><span class="badge ${vEmp.length>0?'badge-pendiente':'badge-entregado'}">${vEmp.length>0?'Pendiente':'—'}</span></td>
+      <td>${total>0?`<button class="btn btn-primary btn-sm" onclick="toast('Marcado como cobrado','success')">Cobrar</button>`:''}</td>
+    </tr>`;
   }).join('');
 }
 
-// ================================================================
-//  CADETES
-// ================================================================
-
-function renderCadetes() {
-  document.getElementById('cadetesGrid').innerHTML = couriers.map(c => `
-    <div class="courier-card">
-      <div class="cc-top">
-        <div class="cc-avatar">${c.initials}</div>
-        <div>
-          <div class="cc-name">${c.name}</div>
-          <div class="cc-zone">${c.zone}</div>
-        </div>
-      </div>
-      <div class="cc-stats">
-        <div class="cc-stat">
-          <div class="cc-stat-value text-emerald">${c.activeTrips}</div>
-          <div class="cc-stat-label">Activos</div>
-        </div>
-        <div class="cc-stat">
-          <div class="cc-stat-value">${c.completedToday}</div>
-          <div class="cc-stat-label">Hoy</div>
-        </div>
-        <div class="cc-stat">
-          <div class="cc-stat-value">${c.efficiency}%</div>
-          <div class="cc-stat-label">Eficiencia</div>
-        </div>
-      </div>
-      <div style="margin-bottom:14px">
-        <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--text-muted);margin-bottom:4px">
-          <span>Eficiencia</span><span class="mono">${c.efficiency}%</span>
-        </div>
-        <div class="progress-bar">
-          <div class="progress-fill" style="width:${c.efficiency}%"></div>
-        </div>
-      </div>
-      <div class="cc-meta">
-        <div class="cc-meta-row">
-          <span class="cc-meta-label">Teléfono</span>
-          <span>${c.phone}</span>
-        </div>
-        <div class="cc-meta-row">
-          <span class="cc-meta-label">Vehículo</span>
-          <span class="cc-vehicle-badge">${c.vehicleIcon} ${c.vehicle}</span>
-        </div>
-        <div class="cc-meta-row">
-          <span class="cc-meta-label">Total Viajes</span>
-          <span class="mono">${c.totalTrips}</span>
-        </div>
-        <div class="cc-meta-row">
-          <span class="cc-meta-label">Km Totales</span>
-          <span class="mono">${c.kmTotal.toLocaleString('es-AR')} km</span>
-        </div>
-      </div>
-    </div>
-  `).join('');
-}
-
-// ================================================================
-//  EMPRESAS
-// ================================================================
-
-function renderEmpresas() {
-  document.getElementById('empresasGrid').innerHTML = empresas.map(e => `
-    <div class="empresa-card" onclick="openEmpresaModal(${e.id})">
-      <div class="ec-name">${e.name}</div>
-      <div class="ec-cuit">CUIT: ${e.cuit}</div>
-      <div class="ec-stats">
-        <div>
-          <div class="ec-stat-value text-emerald mono">${e.tripCount}</div>
-          <div class="ec-stat-label">Viajes este mes</div>
-        </div>
-        <div>
-          <div class="ec-stat-value mono">${formatMoney(e.monthlyBilling)}</div>
-          <div class="ec-stat-label">Facturación mensual</div>
-        </div>
-      </div>
-      <div class="ec-info">
-        <div class="ec-info-row"><span class="ec-info-icon">👤</span> ${e.contact}</div>
-        <div class="ec-info-row"><span class="ec-info-icon">📞</span> ${e.phone}</div>
-        <div class="ec-info-row"><span class="ec-info-icon">📍</span> ${e.address}</div>
-      </div>
-    </div>
-  `).join('');
-}
-
-function openEmpresaModal(id) {
-  const e = getEmpresa(id);
-  const trips = viajes.filter(v => v.empresaId === id);
-
-  openModal(`
-    <div class="modal-header">
-      <h3>${e.name}</h3>
-      <button class="modal-close" onclick="closeModal()">✕</button>
-    </div>
-
-    <div class="modal-section">
-      <div class="modal-section-title">Datos de la empresa</div>
-      <div class="modal-info-grid">
-        <div class="modal-info-item">
-          <div class="mii-label">CUIT</div>
-          <div class="mii-value mono">${e.cuit}</div>
-        </div>
-        <div class="modal-info-item">
-          <div class="mii-label">Contacto</div>
-          <div class="mii-value">${e.contact}</div>
-        </div>
-        <div class="modal-info-item">
-          <div class="mii-label">Teléfono</div>
-          <div class="mii-value">${e.phone}</div>
-        </div>
-        <div class="modal-info-item">
-          <div class="mii-label">Dirección</div>
-          <div class="mii-value">${e.address}</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal-section">
-      <div class="modal-section-title">Resumen del mes</div>
-      <div class="modal-info-grid">
-        <div class="modal-info-item">
-          <div class="mii-label">Viajes</div>
-          <div class="mii-value mono" style="font-size:1.3rem;color:var(--emerald)">${e.tripCount}</div>
-        </div>
-        <div class="modal-info-item">
-          <div class="mii-label">Facturación</div>
-          <div class="mii-value mono" style="font-size:1.3rem">${formatMoney(e.monthlyBilling)}</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal-section">
-      <div class="modal-section-title">Últimos viajes</div>
-      ${trips.map(v => {
-        const c = getCourier(v.courierId);
-        return `<div class="modal-trip-item">
-          <div>
-            <span class="mono text-emerald fw-600" style="font-size:0.78rem">${v.id}</span>
-            <span style="color:var(--text-muted);font-size:0.78rem;margin-left:8px">${formatDate(v.fecha)}</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px">
-            <span style="font-size:0.78rem;color:var(--text-secondary)">${c.name}</span>
-            ${estadoBadge(v.estado)}
-          </div>
-        </div>`;
-      }).join('')}
-    </div>
-  `);
-}
-
-// ================================================================
-//  ZONAS
-// ================================================================
-
-function renderZonas(filter = '') {
-  const container = document.getElementById('zonasContainer');
-  const lowerFilter = filter.toLowerCase();
-
-  let html = '';
-  Object.entries(zonesData).forEach(([region, names]) => {
-    const filtered = names.filter(n => n.toLowerCase().includes(lowerFilter));
-    if (filtered.length === 0) return;
-
-    html += `<div class="zone-group">
-      <div class="zone-group-title">${region} (${filtered.length})</div>
-      <div class="zone-list">
-        ${filtered.map(name => {
-          const z = allZones.find(z => z.name === name && z.region === region);
-          const c = getCourier(z.courierId);
-          return `<div class="zone-item">
-            <div>
-              <div class="zi-name">${name}</div>
-              <div class="zi-courier">${c.name}</div>
-            </div>
-            <div class="zi-count">${z.tripCount}</div>
-          </div>`;
-        }).join('')}
-      </div>
-    </div>`;
+function exportLiquidacion(){
+  if(typeof XLSX==='undefined'){toast('No disponible','error');return;}
+  const mes=document.getElementById('liquidMes').value||todayStr().slice(0,7);
+  const vMes=db.viajes.filter(v=>v.fecha.startsWith(mes)&&v.estado!=='cancelado');
+  const cadData=db.cadetes.map(cad=>{
+    const vm=vMes.filter(v=>v.cadeteId===cad.id);
+    const valesM=cad.vales.filter(v=>v.fecha.startsWith(mes)).reduce((s,v)=>s+v.monto,0);
+    return {'Cadete':cad.nombre,'Vehículo':cad.vehiculo,'Zona':cad.zona,'Viajes':vm.length,'Monto viajes':vm.reduce((s,v)=>s+v.precio,0),'Salario':cad.salario,'Vales':valesM,'A pagar':cad.salario-valesM};
   });
-
-  container.innerHTML = html || '<p style="color:var(--text-muted);padding:20px">No se encontraron zonas</p>';
+  const empData=db.empresas.map(emp=>{
+    const ve=vMes.filter(v=>v.empresaId===emp.id);
+    return {'Empresa':emp.nombre,'CUIT':emp.cuit,'Viajes':ve.length,'Total facturado':ve.reduce((s,v)=>s+v.precio,0)};
+  });
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(cadData),'Cadetes');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(empData),'Empresas');
+  XLSX.writeFile(wb,`liquidacion_${mes}.xlsx`);
+  toast('Excel descargado','success');
 }
 
-document.getElementById('zoneSearch').addEventListener('input', function() {
-  renderZonas(this.value);
+// POPULATE SELECTS
+function populateSelects(){
+  const ne=document.getElementById('nv_empresa'), nc=document.getElementById('nv_cadete'), nz=document.getElementById('nv_zona');
+  if(ne) ne.innerHTML='<option value="">Seleccionar empresa...</option>'+db.empresas.map(e=>`<option value="${e.id}">${e.nombre}</option>`).join('');
+  if(nc) nc.innerHTML='<option value="">Seleccionar cadete...</option>'+db.cadetes.map(c=>`<option value="${c.id}">${veh[c.vehiculo]} ${c.nombre}</option>`).join('');
+  if(nz) nz.innerHTML='<option value="">Seleccionar zona...</option>'+db.zonas.map(z=>`<option value="${z.id}">${z.nombre} (${z.region})</option>`).join('');
+}
+
+// INIT
+document.addEventListener('DOMContentLoaded',()=>{
+  loadDB();
+  document.getElementById('liquidMes').value=todayStr().slice(0,7);
+  document.getElementById('filterViajeFecha').value='';
+  renderDash();
 });
-
-// ================================================================
-//  LIQUIDACION
-// ================================================================
-
-function renderLiquidacion() {
-  const totalCadetes = couriers.reduce((s, c) => s + c.montoAPagar, 0);
-  const totalEmpresas = empresas.reduce((s, e) => s + e.monthlyBilling, 0);
-
-  document.getElementById('liqTotals').innerHTML = `
-    <div class="liq-total-card">
-      <div class="ltc-label">Total a Pagar Cadetes</div>
-      <div class="ltc-value">${formatMoney(totalCadetes)}</div>
-    </div>
-    <div class="liq-total-card">
-      <div class="ltc-label">Total Facturado Empresas</div>
-      <div class="ltc-value">${formatMoney(totalEmpresas)}</div>
-    </div>
-    <div class="liq-total-card">
-      <div class="ltc-label">Margen Operativo</div>
-      <div class="ltc-value">${formatMoney(totalEmpresas - totalCadetes)}</div>
-    </div>
-  `;
-
-  // Cadetes table
-  document.getElementById('liqCadetesBody').innerHTML = couriers.map(c => `
-    <tr>
-      <td class="fw-600">${c.name}</td>
-      <td class="mono">${c.totalTrips}</td>
-      <td class="mono">${c.kmTotal.toLocaleString('es-AR')} km</td>
-      <td><span class="mono">${c.efficiency}%</span></td>
-      <td class="mono fw-600 text-emerald">${formatMoney(c.montoAPagar)}</td>
-    </tr>
-  `).join('');
-
-  // Cadetes mobile
-  document.getElementById('liqCadetesMobile').innerHTML = couriers.map(c => `
-    <div class="mobile-card">
-      <div class="mc-header">
-        <span class="fw-600">${c.name}</span>
-        <span class="mono fw-600 text-emerald">${formatMoney(c.montoAPagar)}</span>
-      </div>
-      <div class="mc-row"><span class="mc-label">Viajes</span><span class="mono">${c.totalTrips}</span></div>
-      <div class="mc-row"><span class="mc-label">Km Total</span><span class="mono">${c.kmTotal.toLocaleString('es-AR')} km</span></div>
-      <div class="mc-row"><span class="mc-label">Eficiencia</span><span class="mono">${c.efficiency}%</span></div>
-    </div>
-  `).join('');
-
-  // Empresas table
-  document.getElementById('liqEmpresasBody').innerHTML = empresas.map(e => `
-    <tr>
-      <td class="fw-600">${e.name}</td>
-      <td class="mono">${e.cuit}</td>
-      <td class="mono">${e.tripCount}</td>
-      <td class="mono fw-600 text-emerald">${formatMoney(e.monthlyBilling)}</td>
-    </tr>
-  `).join('');
-
-  // Empresas mobile
-  document.getElementById('liqEmpresasMobile').innerHTML = empresas.map(e => `
-    <div class="mobile-card">
-      <div class="mc-header">
-        <span class="fw-600">${e.name}</span>
-        <span class="mono fw-600 text-emerald">${formatMoney(e.monthlyBilling)}</span>
-      </div>
-      <div class="mc-row"><span class="mc-label">CUIT</span><span class="mono">${e.cuit}</span></div>
-      <div class="mc-row"><span class="mc-label">Viajes</span><span class="mono">${e.tripCount}</span></div>
-    </div>
-  `).join('');
-}
-
-// ================================================================
-//  INIT
-// ================================================================
-
-function init() {
-  renderDashboard();
-  renderCharts();
-  renderViajesFilters();
-  renderViajes();
-  renderCadetes();
-  renderEmpresas();
-  renderZonas();
-  renderLiquidacion();
-}
-
-document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
