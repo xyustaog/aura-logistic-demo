@@ -991,11 +991,14 @@ function guardarViaje(){
   db.viajes.unshift({id,fecha,empresaId:empId,cadeteId:cadId,origen,destino:{direccion:destDir,zona:zonaId},bultos,peso,precio,pagador,tipoCarga,estado:'pendiente',horaPickup:hora,horaEntrega:null,observaciones:obs,pagado:false,facturado:false});
   saveDB();
   // Reset form
-  ['nv_empresa','nv_cadete','nv_zona'].forEach(id=>document.getElementById(id).value='');
-  ['nv_origen','nv_destDir','nv_obs'].forEach(id=>document.getElementById(id).value='');
+  ['nv_empresa','nv_cadete','nv_zona'].forEach(fid=>document.getElementById(fid).value='');
+  ['nv_origen','nv_destDir','nv_obs'].forEach(fid=>document.getElementById(fid).value='');
   document.getElementById('nv_bultos').value='1';
   document.getElementById('nv_peso').value='1';
   document.getElementById('nv_precio').value='';
+  document.getElementById('nv_hora').value='09:00';
+  document.getElementById('nv_tipoCarga').value='bultos';
+  document.getElementById('nv_pagador').value='empresa';
   document.getElementById('nv_preview').style.display='none';
   toast(`Viaje VJ-${id.slice(-4).toUpperCase()} creado`,'success');
   goto('viajes');
@@ -1142,6 +1145,9 @@ function guardarVale(){
 function eliminarVale(cadId, valeId){
   const cad=(db.cadetes||[]).find(c=>c.id===cadId);
   if(!cad) return;
+  const vale=(cad.vales||[]).find(v=>v.id===valeId);
+  if(!vale) return;
+  if(!confirm(`¿Eliminar el vale "${vale.concepto}" por ${ars(vale.monto)}?`)) return;
   if(!cad.vales) cad.vales=[];
   cad.vales=cad.vales.filter(v=>v.id!==valeId);
   saveDB(); closeModal('modalDetCadete');
