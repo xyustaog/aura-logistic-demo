@@ -348,7 +348,10 @@ tbody td{padding:11px 14px;font-size:13px}
       <div class="form-group"><label class="form-label">Fecha</label><input type="date" class="form-control" id="nv_fecha"></div>
       <div class="form-group"><label class="form-label">Hora pickup</label><input type="time" class="form-control" id="nv_hora" value="09:00"></div>
     </div>
-    <div class="form-group"><label class="form-label">Observaciones</label><input class="form-control" id="nv_obs" placeholder="Frágil, requiere firma, etc."></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Tipo de carga</label><select class="form-control" id="nv_tipoCarga"><option value="bultos">Bultos generales</option><option value="pallets">Pallets</option><option value="refrigerado">Refrigerado</option><option value="documentos">Documentos / Sobres</option><option value="electronica">Electrónica / Frágil</option><option value="textil">Textil / Indumentaria</option><option value="farmaceutico">Farmacéutico</option></select></div>
+      <div class="form-group"><label class="form-label">Observaciones</label><input class="form-control" id="nv_obs" placeholder="Frágil, requiere firma, etc."></div>
+    </div>
     <div id="nv_preview" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:16px">
       <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;margin-bottom:8px">Precio estimado</div>
       <div id="nv_precioPreview" style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:600;color:var(--accent)"></div>
@@ -581,17 +584,22 @@ function initDemo(){
   const t=today.toISOString().split('T')[0];
 
   db.cadetes=[
-    {id:'cad1',nombre:'Martín Pérez',telefono:'11-4523-7890',vehiculo:'moto',zona:'Zona Sur',activo:true,salario:180000,vales:[{id:'v1',fecha:sub(5),concepto:'Adelanto',monto:5000},{id:'v2',fecha:sub(2),concepto:'Combustible',monto:3000}]},
-    {id:'cad2',nombre:'Lucas García',telefono:'11-3412-6789',vehiculo:'auto',zona:'Zona Norte',activo:true,salario:200000,vales:[{id:'v3',fecha:sub(8),concepto:'Adelanto',monto:8000}]},
-    {id:'cad3',nombre:'Facundo Torres',telefono:'11-2301-5678',vehiculo:'utilitario',zona:'CABA',activo:true,salario:220000,vales:[]}
+    {id:'cad1',nombre:'Martín Pérez',telefono:'11-4523-7890',vehiculo:'moto',zona:'Zona Sur',activo:true,salario:185000,patente:'AEF 623',vales:[{id:'v1',fecha:sub(5),concepto:'Adelanto quincena',monto:5000},{id:'v2',fecha:sub(2),concepto:'Combustible',monto:3200}]},
+    {id:'cad2',nombre:'Lucas García',telefono:'11-3412-6789',vehiculo:'auto',zona:'Zona Norte',activo:true,salario:210000,patente:'JKL 458',vales:[{id:'v3',fecha:sub(8),concepto:'Adelanto',monto:8000}]},
+    {id:'cad3',nombre:'Facundo Torres',telefono:'11-2301-5678',vehiculo:'utilitario',zona:'CABA Centro',activo:true,salario:245000,patente:'AB 123 CD',vales:[]},
+    {id:'cad4',nombre:'Juan Manuel Sosa',telefono:'11-5634-9012',vehiculo:'moto',zona:'GBA Sur',activo:true,salario:178000,patente:'BCD 741',vales:[{id:'v4',fecha:sub(3),concepto:'Reparación moto',monto:12000}]},
+    {id:'cad5',nombre:'Romina Díaz',telefono:'11-6745-0123',vehiculo:'auto',zona:'GBA Norte',activo:true,salario:215000,patente:'MNO 369',vales:[]},
+    {id:'cad6',nombre:'Diego Fernández',telefono:'11-7856-1234',vehiculo:'utilitario',zona:'GBA Oeste',activo:true,salario:252000,patente:'AC 456 EF',vales:[{id:'v5',fecha:sub(1),concepto:'Peaje autopista',monto:2800}]}
   ];
 
   db.empresas=[
-    {id:'e1',nombre:'Farmacia Central',cuit:'30-71234567-8',contacto:'Sra. Méndez',telefono:'11-4000-1234',direccion:'Av. Corrientes 2345, CABA',activa:true},
-    {id:'e2',nombre:'Distribuidora del Sur',cuit:'30-45678901-2',contacto:'Sr. Villalba',telefono:'11-4000-2345',direccion:'Av. Mitre 890, Avellaneda',activa:true},
-    {id:'e3',nombre:'Norte Express',cuit:'30-23456789-0',contacto:'Lic. Peralta',telefono:'11-4000-3456',direccion:'Maipú 456, San Isidro',activa:true},
-    {id:'e4',nombre:'TecnoShop',cuit:'30-67890123-4',contacto:'Ing. Castillo',telefono:'11-4000-4567',direccion:'Viamonte 789, CABA',activa:true},
-    {id:'e5',nombre:'Alimentos Premium',cuit:'30-89012345-6',contacto:'Sr. Ibáñez',telefono:'11-4000-5678',direccion:'Constitución 234, CABA',activa:true}
+    {id:'e1',nombre:'Farmacia Central S.A.',cuit:'30-71234567-8',contacto:'Sra. Ana Méndez',telefono:'11-4000-1234',direccion:'Av. Corrientes 2345, CABA',activa:true},
+    {id:'e2',nombre:'Distribuidora del Sur',cuit:'30-45678901-2',contacto:'Sr. Roberto Villalba',telefono:'11-4000-2345',direccion:'Av. Mitre 890, Avellaneda',activa:true},
+    {id:'e3',nombre:'Norte Express Logística',cuit:'30-23456789-0',contacto:'Lic. Graciela Peralta',telefono:'11-4000-3456',direccion:'Maipú 456, San Isidro',activa:true},
+    {id:'e4',nombre:'TecnoShop Argentina',cuit:'30-67890123-4',contacto:'Ing. Héctor Castillo',telefono:'11-4000-4567',direccion:'Viamonte 789, CABA',activa:true},
+    {id:'e5',nombre:'Alimentos Premium S.R.L.',cuit:'30-89012345-6',contacto:'Sr. Diego Ibáñez',telefono:'11-4000-5678',direccion:'Constitución 234, CABA',activa:true},
+    {id:'e6',nombre:'Laboratorio Rivadavia',cuit:'30-12398765-1',contacto:'Dra. Mónica Suárez',telefono:'11-4000-6789',direccion:'Av. Rivadavia 4500, CABA',activa:true},
+    {id:'e7',nombre:'Textil San Martín',cuit:'30-55443322-7',contacto:'Sr. Carlos Romero',telefono:'11-4000-7890',direccion:'Av. San Martín 1200, Morón',activa:true}
   ];
 
   db.zonas=[
@@ -649,34 +657,51 @@ function initDemo(){
   }
 
   db.viajes=[
-    mkViaje('vj001','e1','cad1','Av. Corrientes 2345, CABA','z22','Mitre 456',2,3,0,'en_curso'),
-    mkViaje('vj002','e2','cad2','Maipú 456, San Isidro','z1','Gurruchaga 789',1,1,0,'pendiente'),
-    mkViaje('vj003','e3','cad3','Viamonte 789, CABA','z23','San Martín 234',4,12,0,'en_curso'),
-    mkViaje('vj004','e4','cad1','Constitución 234, CABA','z24','Roca 567',3,5,0,'pendiente'),
-    mkViaje('vj005','e5','cad2','Av. Corrientes 100, CABA','z2','Cabildo 890',2,2,0,'entregado',null,'destinatario'),
-    mkViaje('vj006','e1','cad3','San Martín 1234, CABA','z21','Mitre 123',1,2,1,'entregado'),
-    mkViaje('vj007','e2','cad1','Belgrano 567, CABA','z3','Juncal 456',2,4,1,'entregado'),
-    mkViaje('vj008','e3','cad2','Corrientes 890, CABA','z31','Maipú 234',1,1,1,'entregado'),
-    mkViaje('vj009','e4','cad3','Rivadavia 123, CABA','z25','Mitre 789',3,8,2,'entregado'),
-    mkViaje('vj010','e5','cad1','Av. Santa Fe 456, CABA','z5','Rivadavia 123',2,3,2,'entregado'),
-    mkViaje('vj011','e1','cad2','Cabildo 789, CABA','z32','Florida 456',4,6,2,'entregado'),
-    mkViaje('vj012','e2','cad3','Thames 234, CABA','z41','Brown 789',1,2,3,'entregado'),
-    mkViaje('vj013','e3','cad1','Scalabrini Ortiz 567, CABA','z22','Alsina 234',2,3,3,'entregado'),
-    mkViaje('vj014','e4','cad2','Av. Corrientes 1500, CABA','z6','Dorrego 789',1,1,4,'entregado'),
-    mkViaje('vj015','e5','cad3','Av. Rivadavia 3456, CABA','z26','San Martín 123',3,9,4,'entregado'),
-    mkViaje('vj016','e1','cad1','Av. Independencia 789, CABA','z4','Defensa 567',2,4,5,'cancelado'),
-    mkViaje('vj017','e2','cad2','Av. Gaona 234, CABA','z42','Rivadavia 890',1,2,5,'entregado'),
-    mkViaje('vj018','e3','cad3','Av. Nazca 456, CABA','z7','Warnes 234',4,8,6,'entregado'),
-    mkViaje('vj019','e4','cad1','Av. Juan B. Justo 789, CABA','z33','Roca 123',2,3,6,'entregado'),
-    mkViaje('vj020','e5','cad2','Av. Forest 123, CABA','z8','Maza 456',1,1,7,'entregado')
+    // Hoy — activos
+    mkViaje('vj001','e1','cad1','Av. Corrientes 2345, CABA','z22','Mitre 456, Lanús',2,3,0,'en_curso'),
+    mkViaje('vj002','e2','cad2','Maipú 456, San Isidro','z1','Gurruchaga 789, Palermo',1,1,0,'pendiente'),
+    mkViaje('vj003','e3','cad3','Viamonte 789, CABA','z23','San Martín 234, Lomas de Zamora',4,12,0,'en_curso'),
+    mkViaje('vj004','e4','cad1','Constitución 234, CABA','z24','Mitre 567, Quilmes',3,5,0,'pendiente'),
+    mkViaje('vj005','e5','cad4','Av. Corrientes 100, CABA','z2','Cabildo 890, Belgrano',2,2,0,'en_curso',null,'destinatario'),
+    mkViaje('vj021','e6','cad5','Av. Rivadavia 4500, CABA','z31','Maipú 123, Vicente López',1,2,0,'pendiente'),
+    mkViaje('vj022','e7','cad2','Av. San Martín 1200, Morón','z41','Brown 456, Morón',3,8,0,'en_curso'),
+    // Ayer
+    mkViaje('vj006','e1','cad3','San Martín 1234, CABA','z21','Mitre 123, Avellaneda',1,2,1,'entregado'),
+    mkViaje('vj007','e2','cad1','Belgrano 567, CABA','z3','Juncal 456, Recoleta',2,4,1,'entregado'),
+    mkViaje('vj008','e3','cad2','Corrientes 890, CABA','z31','Maipú 234, Vicente López',1,1,1,'entregado'),
+    mkViaje('vj023','e4','cad4','Av. La Plata 345, CABA','z25','Ruta 2 km 5, Berazategui',2,6,1,'entregado'),
+    mkViaje('vj024','e5','cad5','Defensa 890, CABA','z32','Posadas 123, San Isidro',1,1,1,'entregado'),
+    // Hace 2 días
+    mkViaje('vj009','e4','cad3','Rivadavia 123, CABA','z25','Mitre 789, Berazategui',3,8,2,'entregado'),
+    mkViaje('vj010','e5','cad1','Av. Santa Fe 456, CABA','z5','Rivadavia 123, Caballito',2,3,2,'entregado'),
+    mkViaje('vj011','e1','cad2','Cabildo 789, CABA','z32','Florida 456, San Isidro',4,6,2,'entregado'),
+    mkViaje('vj025','e6','cad4','Monroe 234, CABA','z33','Libertad 567, San Fernando',1,2,2,'entregado'),
+    mkViaje('vj026','e7','cad5','Gaona 890, Morón','z42','Rivadavia 123, Ituzaingó',2,5,2,'entregado'),
+    // Hace 3-4 días
+    mkViaje('vj012','e2','cad3','Thames 234, CABA','z41','Brown 789, Morón',1,2,3,'entregado'),
+    mkViaje('vj013','e3','cad1','Scalabrini Ortiz 567, CABA','z22','Alsina 234, Lanús',2,3,3,'entregado'),
+    mkViaje('vj027','e4','cad2','Av. Córdoba 1234, CABA','z34','Ruta 197 km 2, Tigre',1,3,3,'entregado'),
+    mkViaje('vj028','e5','cad4','Humberto 1ro 456, CABA','z27','Donato Álvarez 234, Almirante Brown',3,9,3,'entregado'),
+    mkViaje('vj014','e4','cad2','Av. Corrientes 1500, CABA','z6','Dorrego 789, Villa Crespo',1,1,4,'entregado'),
+    mkViaje('vj015','e5','cad3','Av. Rivadavia 3456, CABA','z26','San Martín 123, Florencio Varela',3,9,4,'entregado'),
+    mkViaje('vj029','e6','cad5','Sucre 890, CABA','z35','Mitre 456, Malvinas Argentinas',2,4,4,'entregado'),
+    // Hace 5-7 días
+    mkViaje('vj016','e1','cad1','Av. Independencia 789, CABA','z4','Defensa 567, San Telmo',2,4,5,'cancelado'),
+    mkViaje('vj017','e2','cad2','Av. Gaona 234, CABA','z42','Rivadavia 890, Ituzaingó',1,2,5,'entregado'),
+    mkViaje('vj030','e7','cad3','Av. San Martín 890, Morón','z43','Juncal 123, Hurlingham',4,10,5,'entregado'),
+    mkViaje('vj018','e3','cad3','Av. Nazca 456, CABA','z7','Warnes 234, Almagro',4,8,6,'entregado'),
+    mkViaje('vj019','e4','cad1','Av. Juan B. Justo 789, CABA','z33','Roca 123, San Fernando',2,3,6,'entregado'),
+    mkViaje('vj020','e5','cad2','Av. Forest 123, CABA','z8','Maza 456, Boedo',1,1,7,'entregado'),
+    mkViaje('vj031','e6','cad4','Av. Callao 234, CABA','z32','Las Heras 567, San Isidro',2,4,7,'entregado'),
+    mkViaje('vj032','e1','cad5','Av. Entre Ríos 890, CABA','z21','Belgrano 123, Avellaneda',1,2,7,'entregado')
   ];
 
   saveDB();
 }
 
 // HELPERS
-const ars=n=>'$'+Math.round(n||0).toLocaleString('es-AR');
-const fd=s=>{ if(!s) return '—'; const [y,m,dd]=s.split('-'); return `${dd}/${m}/${y}`; };
+const ars=n=>{if(n===null||n===undefined||isNaN(Number(n)))return '$0';const v=Math.round(Number(n));return '$'+v.toLocaleString('es-AR',{useGrouping:true});};
+const fd=s=>{ if(!s) return '—'; const parts=s.split('-'); if(parts.length<3) return s; const [y,m,dd]=parts; return `${dd}/${m}/${y}`; };
 const todayStr=()=>new Date().toISOString().split('T')[0];
 const veh={moto:'🏍',auto:'🚗',utilitario:'🚐'};
 const estadoLabel={pendiente:'Pendiente',en_curso:'En curso',entregado:'Entregado',cancelado:'Cancelado'};
@@ -686,8 +711,8 @@ function toast(msg,type='info'){
   t.className=`toast ${type}`;t.textContent=msg;c.appendChild(t);
   setTimeout(()=>{t.style.cssText='opacity:0;transform:translateX(100%);transition:.3s';setTimeout(()=>t.remove(),300);},3000);
 }
-function openModal(id){ document.getElementById(id).classList.add('open'); }
-function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+function openModal(id){ const el=document.getElementById(id); if(el) el.classList.add('open'); }
+function closeModal(id){ const el=document.getElementById(id); if(el) el.classList.remove('open'); }
 function toggleDrawer(){
   document.getElementById('mobileOverlay').classList.toggle('open');
   document.getElementById('mobileDrawer').classList.toggle('open');
@@ -697,9 +722,12 @@ function goto(pg){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.querySelectorAll('.mnav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('page-'+pg).classList.add('active');
+  const pageEl=document.getElementById('page-'+pg);
+  if(!pageEl) return;
+  pageEl.classList.add('active');
   document.querySelector(`.nav-item[onclick*="'${pg}'"]`)?.classList.add('active');
   const mn=document.getElementById('mn-'+pg); if(mn) mn.classList.add('active');
+  window.scrollTo(0,0);
   renderPage(pg);
 }
 
@@ -793,14 +821,16 @@ function renderAlertas(){
 }
 
 function renderViajeCard(v, mini=false){
-  const emp=db.empresas.find(e=>e.id===v.empresaId);
-  const cad=db.cadetes.find(c=>c.id===v.cadeteId);
-  const zona=db.zonas.find(z=>z.id===v.destino?.zona);
-  return `<div class="viaje-card ${v.estado}" onclick="verViaje('${v.id}')">
-    <div class="viaje-id">VJ-${v.id.slice(-4).toUpperCase()}<br>${fd(v.fecha)}</div>
+  if(!v) return '';
+  const emp=(db.empresas||[]).find(e=>e.id===v.empresaId);
+  const cad=(db.cadetes||[]).find(c=>c.id===v.cadeteId);
+  const zona=(db.zonas||[]).find(z=>z.id===v.destino?.zona);
+  const iconVeh=veh[cad?.vehiculo]||'🚚';
+  return `<div class="viaje-card ${v.estado||''}" onclick="verViaje('${v.id}')">
+    <div class="viaje-id">VJ-${(v.id||'').slice(-4).toUpperCase()}<br>${fd(v.fecha)}</div>
     <div class="viaje-info">
       <div class="viaje-ruta">${emp?.nombre||'—'}</div>
-      <div class="viaje-meta">${veh[cad?.vehiculo]||''} ${cad?.nombre||'—'} · ${zona?.nombre||v.destino?.direccion||'—'} · ${v.bultos} bulto${v.bultos!==1?'s':''}</div>
+      <div class="viaje-meta">${iconVeh} ${cad?.nombre||'—'} · ${zona?.nombre||v.destino?.direccion||'—'} · ${v.bultos||1} bulto${(v.bultos||1)!==1?'s':''}</div>
     </div>
     <div style="text-align:right">
       <div class="viaje-price">${ars(v.precio)}</div>
@@ -815,19 +845,25 @@ function renderViajeCard(v, mini=false){
 }
 
 function renderViajes(){
-  const q=(document.getElementById('searchViajes').value||'').toLowerCase();
-  const fe=document.getElementById('filterViajeEstado').value;
+  const searchEl=document.getElementById('searchViajes');
+  const feEl=document.getElementById('filterViajeEstado');
   const fc=document.getElementById('filterViajeCadete');
-  if(fc.options.length<=1) db.cadetes.forEach(c=>{const o=document.createElement('option');o.value=c.id;o.textContent=c.nombre;fc.appendChild(o);});
+  const ffEl=document.getElementById('filterViajeFecha');
+  if(!searchEl||!feEl||!fc||!ffEl) return;
+  const q=(searchEl.value||'').toLowerCase();
+  const fe=feEl.value;
+  if(fc.options.length<=1)(db.cadetes||[]).forEach(c=>{const o=document.createElement('option');o.value=c.id;o.textContent=c.nombre;fc.appendChild(o);});
   const fcv=fc.value;
-  const ff=document.getElementById('filterViajeFecha').value;
-  let list=[...db.viajes].sort((a,b)=>b.fecha.localeCompare(a.fecha)).filter(v=>{
-    const emp=db.empresas.find(e=>e.id===v.empresaId);
-    const zona=db.zonas.find(z=>z.id===v.destino?.zona);
-    const txt=`${emp?.nombre} ${v.origen} ${zona?.nombre} ${v.destino?.direccion}`.toLowerCase();
+  const ff=ffEl.value;
+  const viajes=db.viajes||[];
+  let list=[...viajes].sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||'')).filter(v=>{
+    const emp=(db.empresas||[]).find(e=>e.id===v.empresaId);
+    const zona=(db.zonas||[]).find(z=>z.id===v.destino?.zona);
+    const txt=`${emp?.nombre||''} ${v.origen||''} ${zona?.nombre||''} ${v.destino?.direccion||''}`.toLowerCase();
     return (!q||txt.includes(q))&&(!fe||v.estado===fe)&&(!fcv||v.cadeteId===fcv)&&(!ff||v.fecha===ff);
   });
   const el=document.getElementById('viajesList');
+  if(!el) return;
   if(!list.length){el.innerHTML='<div class="empty"><div class="empty-icon">🚐</div><div class="empty-text">Sin viajes</div></div>';return;}
   el.innerHTML=list.map(v=>renderViajeCard(v)).join('');
 }
@@ -841,12 +877,14 @@ function cambiarEstado(viajeId, nuevoEstado){
 }
 
 function verViaje(id){
-  const v=db.viajes.find(x=>x.id===id);
-  const emp=db.empresas.find(e=>e.id===v.empresaId);
-  const cad=db.cadetes.find(c=>c.id===v.cadeteId);
-  const zona=db.zonas.find(z=>z.id===v.destino?.zona);
+  const v=(db.viajes||[]).find(x=>x.id===id);
+  if(!v) return;
+  const emp=(db.empresas||[]).find(e=>e.id===v.empresaId);
+  const cad=(db.cadetes||[]).find(c=>c.id===v.cadeteId);
+  const zona=(db.zonas||[]).find(z=>z.id===v.destino?.zona);
   const dvTitle=document.getElementById('dvTitle');
-  dvTitle.textContent=`VJ-${v.id.slice(-4).toUpperCase()} — ${emp?.nombre}`;
+  if(!dvTitle) return;
+  dvTitle.textContent=`VJ-${(v.id||'').slice(-4).toUpperCase()} — ${emp?.nombre||'—'}`;
   dvTitle.dataset.viajeId=v.id;
   document.getElementById('dvBody').innerHTML=`
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;margin-bottom:16px">
@@ -881,12 +919,17 @@ function renderNuevoViaje(){
 }
 
 function calcPrecio(){
-  const zonaId=document.getElementById('nv_zona').value;
-  const bultos=parseInt(document.getElementById('nv_bultos').value)||1;
-  const zona=db.zonas.find(z=>z.id===zonaId);
+  const zonaEl=document.getElementById('nv_zona');
+  const bultosEl=document.getElementById('nv_bultos');
   const prev=document.getElementById('nv_preview');
+  if(!zonaEl||!bultosEl||!prev) return;
+  const zonaId=zonaEl.value;
+  const bultos=Math.max(1,parseInt(bultosEl.value)||1);
+  const zona=(db.zonas||[]).find(z=>z.id===zonaId);
   if(!zona){prev.style.display='none';return;}
-  const precio=zona.precioBase+zona.precioPorBulto*bultos;
+  const base=zona.precioBase||0;
+  const porBulto=zona.precioPorBulto||0;
+  const precio=base+porBulto*bultos;
   if(!precio||precio<=0){
     prev.style.display='block';
     document.getElementById('nv_precio').value='';
@@ -899,7 +942,7 @@ function calcPrecio(){
   document.getElementById('nv_precioPreview').style.color='var(--accent)';
   prev.style.display='block';
   document.getElementById('nv_precioPreview').textContent=ars(precio);
-  document.getElementById('nv_precioDetalle').textContent=`Base: ${ars(zona.precioBase)} + ${bultos} bulto${bultos!==1?'s':''} × ${ars(zona.precioPorBulto)} = ${ars(precio)}`;
+  document.getElementById('nv_precioDetalle').textContent=`Base: ${ars(base)} + ${bultos} bulto${bultos!==1?'s':''} × ${ars(porBulto)} = ${ars(precio)}`;
 }
 
 function validarZona(){
@@ -928,7 +971,8 @@ function guardarViaje(){
   const pagador=document.getElementById('nv_pagador').value;
   const fecha=document.getElementById('nv_fecha').value||todayStr();
   const hora=document.getElementById('nv_hora').value||'09:00';
-  const obs=document.getElementById('nv_obs').value.trim();
+  const tipoCarga=document.getElementById('nv_tipoCarga')?.value||'bultos';
+  const obs=document.getElementById('nv_obs')?.value.trim()||'';
   if(!empId||!cadId||!origen||!destDir||!zonaId){toast('Completá todos los campos obligatorios','error');return;}
   // FIX 5 — bloquear si la zona no tiene tarifa válida
   if(!validarZona()){toast('La zona seleccionada no tiene tarifa — editala primero en Zonas y Precios','error');return;}
@@ -944,7 +988,7 @@ function guardarViaje(){
     toast('⚠ '+(cadete?.nombre||'El cadete')+' ya tiene un viaje en curso — #VJ-'+viajeActivo.id.slice(-4).toUpperCase(),'warning');
   }
   const id=uid();
-  db.viajes.unshift({id,fecha,empresaId:empId,cadeteId:cadId,origen,destino:{direccion:destDir,zona:zonaId},bultos,peso,precio,pagador,estado:'pendiente',horaPickup:hora,horaEntrega:null,observaciones:obs,pagado:false,facturado:false});
+  db.viajes.unshift({id,fecha,empresaId:empId,cadeteId:cadId,origen,destino:{direccion:destDir,zona:zonaId},bultos,peso,precio,pagador,tipoCarga,estado:'pendiente',horaPickup:hora,horaEntrega:null,observaciones:obs,pagado:false,facturado:false});
   saveDB();
   // Reset form
   ['nv_empresa','nv_cadete','nv_zona'].forEach(id=>document.getElementById(id).value='');
@@ -961,12 +1005,15 @@ function guardarViaje(){
 function renderCadetes(){
   const mes=todayStr().slice(0,7);
   const el=document.getElementById('cadetesList');
-  el.innerHTML=db.cadetes.map(cad=>{
-    const viajesMes=db.viajes.filter(v=>v.cadeteId===cad.id&&v.fecha.startsWith(mes)&&v.estado!=='cancelado');
-    const viajesHoy=db.viajes.filter(v=>v.cadeteId===cad.id&&v.fecha===todayStr());
+  if(!el) return;
+  const cadetes=db.cadetes||[];
+  if(!cadetes.length){el.innerHTML='<div class="empty"><div class="empty-icon">👤</div><div class="empty-text">Sin cadetes registrados</div></div>';return;}
+  el.innerHTML=cadetes.map(cad=>{
+    const viajesMes=(db.viajes||[]).filter(v=>v.cadeteId===cad.id&&(v.fecha||'').startsWith(mes)&&v.estado!=='cancelado');
+    const viajesHoy=(db.viajes||[]).filter(v=>v.cadeteId===cad.id&&v.fecha===todayStr());
     const entHoy=viajesHoy.filter(v=>v.estado==='entregado').length;
-    const efic=viajesHoy.length?Math.round(entHoy/viajesHoy.length*100):0;
-    const totalVales=cad.vales.reduce((s,v)=>s+v.monto,0);
+    const efic=viajesHoy.length>0?Math.round(entHoy/viajesHoy.length*100):0;
+    const totalVales=(cad.vales||[]).reduce((s,v)=>s+(v.monto||0),0);
     return `<div class="card">
       <div class="card-row">
         <div>
@@ -975,7 +1022,7 @@ function renderCadetes(){
         </div>
         <div style="text-align:right">
           <div style="font-size:12px;color:var(--text-muted)">${viajesMes.length} viajes este mes</div>
-          <div class="mono" style="font-size:14px;color:var(--success)">${ars(viajesMes.reduce((s,v)=>s+v.precio,0))}</div>
+          <div class="mono" style="font-size:14px;color:var(--success)">${ars(viajesMes.reduce((s,v)=>s+(v.precio||0),0))}</div>
         </div>
       </div>
       <div class="divider"></div>
@@ -995,12 +1042,16 @@ function renderCadetes(){
 }
 
 function verCadete(id){
-  const cad=db.cadetes.find(c=>c.id===id);
+  const cad=(db.cadetes||[]).find(c=>c.id===id);
+  if(!cad) return;
   const mes=todayStr().slice(0,7);
-  const viajesMes=db.viajes.filter(v=>v.cadeteId===id&&v.fecha.startsWith(mes)&&v.estado!=='cancelado');
-  const totalVales=cad.vales.reduce((s,v)=>s+v.monto,0);
-  document.getElementById('detCadTitle').textContent=`${veh[cad.vehiculo]} ${cad.nombre}`;
-  document.getElementById('detCadBody').innerHTML=`
+  const viajesMes=(db.viajes||[]).filter(v=>v.cadeteId===id&&(v.fecha||'').startsWith(mes)&&v.estado!=='cancelado');
+  const totalVales=(cad.vales||[]).reduce((s,v)=>s+(v.monto||0),0);
+  const detCadTitleEl=document.getElementById('detCadTitle');
+  const detCadBodyEl=document.getElementById('detCadBody');
+  if(!detCadTitleEl||!detCadBodyEl) return;
+  detCadTitleEl.textContent=`${veh[cad.vehiculo]||'🚚'} ${cad.nombre}`;
+  detCadBodyEl.innerHTML=`
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;font-size:13px">
       <div><div class="form-label">Vehículo</div><div>${veh[cad.vehiculo]} ${cad.vehiculo}</div></div>
       <div><div class="form-label">Zona</div><div>${cad.zona}</div></div>
@@ -1068,16 +1119,20 @@ function abrirVale(cadId){
 }
 
 function guardarVale(){
-  const cadId=document.getElementById('vale_cadId').value;
-  const cad=db.cadetes.find(c=>c.id===cadId);
-  const fechaVale=document.getElementById('vale_fecha').value;
-  const v={id:uid(),fecha:fechaVale,concepto:document.getElementById('vale_concepto').value.trim(),monto:parseFloat(document.getElementById('vale_monto').value)||0};
+  const cadId=document.getElementById('vale_cadId')?.value;
+  const cad=(db.cadetes||[]).find(c=>c.id===cadId);
+  if(!cad){toast('Cadete no encontrado','error');return;}
+  const fechaVale=document.getElementById('vale_fecha')?.value||todayStr();
+  const concepto=document.getElementById('vale_concepto')?.value.trim()||'';
+  const monto=parseFloat(document.getElementById('vale_monto')?.value)||0;
+  const v={id:uid(),fecha:fechaVale,concepto,monto};
   if(!v.concepto||!v.monto){toast('Completá todos los campos','error');return;}
-  // FIX 2 — vale no puede exceder el saldo disponible del cadete en el mes
+  if(!cad.vales) cad.vales=[];
   const mes=fechaVale?fechaVale.slice(0,7):todayStr().slice(0,7);
-  const totalValesMes=cad.vales.filter(vl=>vl.fecha.startsWith(mes)).reduce((s,vl)=>s+vl.monto,0);
-  if(totalValesMes+v.monto>cad.salario){
-    toast('El vale excede el salario del mes. Disponible: '+ars(cad.salario-totalValesMes),'error');
+  const totalValesMes=(cad.vales||[]).filter(vl=>vl.fecha&&vl.fecha.startsWith(mes)).reduce((s,vl)=>s+(vl.monto||0),0);
+  const salario=cad.salario||0;
+  if(salario>0&&totalValesMes+v.monto>salario){
+    toast('El vale excede el salario del mes. Disponible: '+ars(salario-totalValesMes),'error');
     return;
   }
   cad.vales.push(v); saveDB(); closeModal('modalVale');
@@ -1085,7 +1140,9 @@ function guardarVale(){
 }
 
 function eliminarVale(cadId, valeId){
-  const cad=db.cadetes.find(c=>c.id===cadId);
+  const cad=(db.cadetes||[]).find(c=>c.id===cadId);
+  if(!cad) return;
+  if(!cad.vales) cad.vales=[];
   cad.vales=cad.vales.filter(v=>v.id!==valeId);
   saveDB(); closeModal('modalDetCadete');
   toast('Vale eliminado','info'); renderCadetes();
@@ -1093,7 +1150,9 @@ function eliminarVale(cadId, valeId){
 
 // EMPRESAS
 function renderEmpresas(){
-  const q=(document.getElementById('searchEmpresas').value||'').toLowerCase();
+  const searchEl=document.getElementById('searchEmpresas');
+  if(!searchEl) return;
+  const q=(searchEl.value||'').toLowerCase();
   const mes=todayStr().slice(0,7);
   // Render estado de cuenta table
   const ecBody=document.getElementById('estadoCuentaBody');
@@ -1222,10 +1281,15 @@ function exportEmpresaExcel(){
 
 // ZONAS
 function renderZonas(){
-  const q=(document.getElementById('searchZonas').value||'').toLowerCase();
-  const fr=document.getElementById('filterRegion').value;
-  const list=db.zonas.filter(z=>(!q||z.nombre.toLowerCase().includes(q))&&(!fr||z.region===fr));
+  const searchEl=document.getElementById('searchZonas');
+  const frEl=document.getElementById('filterRegion');
   const el=document.getElementById('zonasList');
+  if(!searchEl||!frEl||!el) return;
+  const q=(searchEl.value||'').toLowerCase();
+  const fr=frEl.value;
+  const zonas=db.zonas||[];
+  const list=zonas.filter(z=>(!q||z.nombre.toLowerCase().includes(q))&&(!fr||z.region===fr));
+  if(!list.length){el.innerHTML='<div class="empty" style="padding:24px"><div class="empty-icon">📍</div><div class="empty-text">Sin zonas encontradas</div></div>';return;}
   const regionColor={CABA:'rgba(124,58,237,.15)',  'GBA Sur':'rgba(239,68,68,.1)','GBA Norte':'rgba(34,197,94,.1)','GBA Oeste':'rgba(245,158,11,.1)'};
   el.innerHTML=list.map(z=>`
     <div class="zona-row" id="zrow-${z.id}">
@@ -1249,9 +1313,12 @@ function editarZona(id){
 }
 
 function guardarZonaPrecio(id){
-  const z=db.zonas.find(x=>x.id===id);
-  z.precioBase=parseFloat(document.getElementById(`einp-base-${id}`).value)||z.precioBase;
-  z.precioPorBulto=parseFloat(document.getElementById(`einp-bulto-${id}`).value)||z.precioPorBulto;
+  const z=(db.zonas||[]).find(x=>x.id===id);
+  if(!z) return;
+  const baseEl=document.getElementById(`einp-base-${id}`);
+  const bultoEl=document.getElementById(`einp-bulto-${id}`);
+  if(baseEl){ const v=parseFloat(baseEl.value); if(!isNaN(v)&&v>=0) z.precioBase=v; }
+  if(bultoEl){ const v=parseFloat(bultoEl.value); if(!isNaN(v)&&v>=0) z.precioPorBulto=v; }
   saveDB(); renderZonas(); toast('Precio actualizado','success');
 }
 
@@ -1265,12 +1332,14 @@ function guardarZona(){
 
 // LIQUIDACIÓN
 function renderLiquidacion(){
-  const mes=document.getElementById('liquidMes').value||todayStr().slice(0,7);
-  const viajesMes=db.viajes.filter(v=>v.fecha.startsWith(mes)&&v.estado!=='cancelado');
+  const mesEl=document.getElementById('liquidMes');
+  if(!mesEl) return;
+  const mes=mesEl.value||todayStr().slice(0,7);
+  const viajesMes=(db.viajes||[]).filter(v=>v.fecha&&v.fecha.startsWith(mes)&&v.estado!=='cancelado');
 
-  const totViajes=viajesMes.reduce((s,v)=>s+v.precio,0);
-  const totSalarios=db.cadetes.reduce((s,c)=>s+c.salario,0);
-  const totVales=db.cadetes.reduce((s,c)=>s+c.vales.filter(v=>v.fecha.startsWith(mes)).reduce((ss,vv)=>ss+vv.monto,0),0);
+  const totViajes=viajesMes.reduce((s,v)=>s+(v.precio||0),0);
+  const totSalarios=(db.cadetes||[]).reduce((s,c)=>s+(c.salario||0),0);
+  const totVales=(db.cadetes||[]).reduce((s,c)=>s+(c.vales||[]).filter(v=>v.fecha&&v.fecha.startsWith(mes)).reduce((ss,vv)=>ss+(vv.monto||0),0),0);
   const margen=totViajes-totSalarios-totVales;
   document.getElementById('liquidSummary').innerHTML=`
     <div class="summary-item"><div class="summary-label">Facturación</div><div class="summary-value" style="color:var(--success)">${ars(totViajes)}</div></div>
@@ -1279,22 +1348,25 @@ function renderLiquidacion(){
     <div class="summary-item"><div class="summary-label">Margen</div><div class="summary-value" style="color:${margen>=0?'var(--success)':'var(--danger)'}">${ars(margen)}</div></div>`;
 
   // Cadetes
-  document.getElementById('liquidCadetes').innerHTML=db.cadetes.map(cad=>{
+  const liquidCadEl=document.getElementById('liquidCadetes');
+  if(liquidCadEl) liquidCadEl.innerHTML=(db.cadetes||[]).map(cad=>{
     const vMes=viajesMes.filter(v=>v.cadeteId===cad.id);
-    const valesM=cad.vales.filter(v=>v.fecha.startsWith(mes)).reduce((s,v)=>s+v.monto,0);
-    const aPagar=cad.salario-valesM;
+    const valesM=(cad.vales||[]).filter(v=>v.fecha&&v.fecha.startsWith(mes)).reduce((s,v)=>s+(v.monto||0),0);
+    const salario=cad.salario||0;
+    const aPagar=salario-valesM;
     return `<tr>
-      <td><div style="font-weight:600">${veh[cad.vehiculo]} ${cad.nombre}</div><div style="font-size:11px;color:var(--text-muted)">${cad.zona}</div></td>
+      <td><div style="font-weight:600">${veh[cad.vehiculo]||'🚚'} ${cad.nombre}</div><div style="font-size:11px;color:var(--text-muted)">${cad.zona||''}</div></td>
       <td>${vMes.length}</td>
-      <td class="mono">${ars(vMes.reduce((s,v)=>s+v.precio,0))}</td>
-      <td class="mono">${ars(cad.salario)}</td>
+      <td class="mono">${ars(vMes.reduce((s,v)=>s+(v.precio||0),0))}</td>
+      <td class="mono">${ars(salario)}</td>
       <td class="mono" style="color:var(--warning)">${ars(valesM)}</td>
       <td class="mono" style="color:var(--success);font-weight:600">${ars(aPagar)}</td>
     </tr>`;
   }).join('');
 
   // Empresas
-  document.getElementById('liquidEmpresas').innerHTML=db.empresas.map(emp=>{
+  const liquidEmpEl=document.getElementById('liquidEmpresas');
+  if(liquidEmpEl) liquidEmpEl.innerHTML=(db.empresas||[]).map(emp=>{
     const vEmp=viajesMes.filter(v=>v.empresaId===emp.id);
     const total=vEmp.reduce((s,v)=>s+v.precio,0);
     // FIX 4 — pendiente real basado en facturado
@@ -1377,6 +1449,7 @@ function imprimirLiquidacion(){
   </body></html>`;
 
   const win=window.open('','_blank');
+  if(!win){toast('El navegador bloqueó la ventana emergente. Permitila e intentá de nuevo.','error');return;}
   win.document.write(html);
   win.document.close();
 }
@@ -1426,6 +1499,7 @@ function imprimirRemito(viajeId){
   const zona=db.zonas.find(z=>z.id===v.destino?.zona);
   const num=`VJ-${v.id.slice(-4).toUpperCase()}`;
   const win=window.open('','_blank');
+  if(!win){toast('El navegador bloqueó la ventana emergente. Permitila e intentá de nuevo.','error');return;}
   win.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Remito ${num}</title>
   <style>
     body{font-family:Arial,sans-serif;font-size:13px;color:#111;padding:28px;max-width:720px;margin:0 auto}
@@ -1479,10 +1553,14 @@ function imprimirRemito(viajeId){
 function abrirVistaCadete(){
   const hoy=todayStr();
   const sel=document.getElementById('vistaCadSel');
-  sel.innerHTML=db.cadetes.map(c=>`<option value="${c.id}">${veh[c.vehiculo]} ${c.nombre}</option>`).join('');
-  const cid=db.cadetes[0]?.id||'';
+  const content=document.getElementById('vistaCadContent');
+  if(!sel||!content) return;
+  const cadetes=db.cadetes||[];
+  if(!cadetes.length){toast('No hay cadetes registrados','info');return;}
+  sel.innerHTML=cadetes.map(c=>`<option value="${c.id}">${veh[c.vehiculo]||'🚚'} ${c.nombre}</option>`).join('');
+  const cid=cadetes[0]?.id||'';
   sel.value=cid;
-  document.getElementById('vistaCadContent').innerHTML=renderVistaCadetePara(cid,hoy);
+  content.innerHTML=renderVistaCadetePara(cid,hoy);
   openModal('modalVistaCadete');
 }
 
@@ -1527,8 +1605,16 @@ function populateSelects(){
 // INIT
 document.addEventListener('DOMContentLoaded',()=>{
   loadDB();
-  document.getElementById('liquidMes').value=todayStr().slice(0,7);
-  document.getElementById('filterViajeFecha').value='';
+  const liquidMesEl=document.getElementById('liquidMes');
+  if(liquidMesEl) liquidMesEl.value=todayStr().slice(0,7);
+  const filtFechaEl=document.getElementById('filterViajeFecha');
+  if(filtFechaEl) filtFechaEl.value='';
+  // Click overlay para cerrar cualquier modal
+  document.querySelectorAll('.modal-overlay').forEach(overlay=>{
+    overlay.addEventListener('click',e=>{
+      if(e.target===overlay) overlay.classList.remove('open');
+    });
+  });
   renderDash();
 });
 </script>
