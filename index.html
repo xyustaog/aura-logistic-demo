@@ -5,49 +5,54 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Aura Logistic — by Yusta Labs</title>
 <meta name="description" content="Aura Logistic: gestión de cadetes y envíos para empresas de logística. Seguimiento de viajes, liquidación diaria, zonas y tarifas — by Yusta Labs.">
-<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 <style>
 :root {
-  --bg: #040D18;
-  --surface: #081828;
-  --surface2: #0D2138;
-  --border: #143050;
-  --primary: #10B981;
-  --primary-dim: #059669;
-  --primary-glow: rgba(16,185,129,.15);
-  --accent: #3B82F6;
-  --text: #E8F4FD;
-  --text-muted: #6B9AB8;
-  --danger: #EF4444;
-  --warning: #F59E0B;
-  --success: #10B981;
+  --bg: #F7F5F2;
+  --surface: #FFFFFF;
+  --surface2: #F0EDE8;
+  --border: #E5DDD6;
+  --border-strong: #C9BDB4;
+  --primary: #4A3B7A;
+  --primary-dark: #33295A;
+  --primary-light: #EEEAF5;
+  --primary-dim: #33295A;
+  --primary-glow: rgba(74,59,122,.1);
+  --accent: #E8A020;
+  --text: #1A1512;
+  --text-muted: #9E8E82;
+  --text-secondary: #6B5E52;
+  --danger: #C0392B;
+  --warning: #B8751A;
+  --success: #2D7A44;
+  --info: #1A5FAD;
   --sidebar-w: 230px;
-  --grid-line: rgba(16,185,129,0.04);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.07);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.09);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',sans-serif;font-size:14px;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 100% 100% at 50% 0%,black 40%,transparent 100%)}
-h1,h2,h3,h4{font-family:'Exo 2',sans-serif}
-.mono{font-family:'JetBrains Mono',monospace}
+h1,h2,h3,h4{font-family:'Inter',sans-serif}
+.mono{font-family:'Inter',monospace}
 .sidebar{position:fixed;left:0;top:0;width:var(--sidebar-w);height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100}
 .sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
 .logo-row{display:flex;align-items:center;gap:10px}
 .logo-icon{width:38px;height:38px;flex-shrink:0}
-.logo-name{font-family:'Exo 2',sans-serif;font-weight:700;font-size:15px;color:var(--text)}
+.logo-name{font-family:'Inter',sans-serif;font-weight:700;font-size:15px;color:var(--primary)}
 .logo-sub{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px;font-weight:600}
 .nav{flex:1;padding:12px 0;overflow-y:auto}
-.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;border-left:3px solid transparent;transition:.2s;color:var(--text-muted);font-size:14px;font-weight:500}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;border-left:3px solid transparent;transition:.2s;color:var(--text-muted);font-size:13px;font-weight:500}
 .nav-item:hover{background:var(--surface2);color:var(--text)}
-.nav-item.active{border-left-color:var(--primary);background:var(--surface2);color:var(--primary)}
-.nav-item svg{width:18px;height:18px;flex-shrink:0}
+.nav-item.active{border-left-color:var(--primary);background:var(--primary-light);color:var(--primary);font-weight:600}
+.nav-item svg{width:18px;height:18px;flex-shrink:0;opacity:.8}
 .sidebar-footer{padding:16px 20px;border-top:1px solid var(--border);font-size:11px;color:var(--text-muted)}
 .main{margin-left:var(--sidebar-w);min-height:100vh;padding:24px}
 .page{display:none}
 .page.active{display:block}
 .topbar{display:none;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:99}
-.topbar-logo{display:flex;align-items:center;gap:8px;font-family:'Exo 2',sans-serif;font-weight:700;font-size:15px}
+.topbar-logo{display:flex;align-items:center;gap:8px;font-family:'Inter',sans-serif;font-weight:700;font-size:15px;color:var(--primary)}
 .hamburger{background:none;border:none;color:var(--text);cursor:pointer;padding:4px}
 .mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);z-index:100;padding-bottom:env(safe-area-inset-bottom)}
 .mobile-nav-inner{display:flex;justify-content:space-around}
@@ -55,85 +60,85 @@ h1,h2,h3,h4{font-family:'Exo 2',sans-serif}
 .mnav-item.active{color:var(--primary)}
 .mnav-item svg{width:20px;height:20px}
 .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
-.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;position:relative;overflow:hidden;transition:.2s;cursor:default}
-.kpi-card:hover{border-color:var(--primary);box-shadow:0 0 20px var(--primary-glow)}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;position:relative;overflow:hidden;transition:.2s;cursor:default;box-shadow:var(--shadow-sm)}
+.kpi-card:hover{border-color:var(--primary);box-shadow:var(--shadow-md)}
 .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--primary),var(--accent))}
 .kpi-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600;margin-bottom:8px}
-.kpi-value{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:600}
+.kpi-value{font-size:24px;font-weight:700;color:var(--text)}
 .kpi-sub{font-size:12px;color:var(--text-muted);margin-top:4px}
 .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:8px}
-.section-title{font-size:22px;font-weight:700;letter-spacing:-0.3px}
+.section-title{font-size:22px;font-weight:700;letter-spacing:-0.3px;color:var(--text)}
 .section-sub{font-size:13px;color:var(--text-muted);margin-top:2px}
 .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:.2s;font-family:'Inter',sans-serif}
 .btn-primary{background:var(--primary);color:#fff}
-.btn-primary:hover{background:var(--primary-dim)}
-.btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
-.btn-ghost:hover{border-color:var(--primary);color:var(--primary)}
-.btn-danger{background:rgba(239,68,68,.15);color:var(--danger);border:1px solid rgba(239,68,68,.3)}
-.btn-success{background:rgba(34,197,94,.15);color:var(--success);border:1px solid rgba(34,197,94,.3)}
-.btn-warning{background:rgba(245,158,11,.15);color:var(--warning);border:1px solid rgba(245,158,11,.3)}
+.btn-primary:hover{background:var(--primary-dark)}
+.btn-ghost{background:transparent;color:var(--text-muted);border:1px solid var(--border)}
+.btn-ghost:hover{color:var(--text);background:var(--surface2)}
+.btn-danger{background:#FDECEB;color:var(--danger);border:1px solid rgba(192,57,43,.2)}
+.btn-success{background:#EBF5EE;color:var(--success);border:1px solid rgba(45,122,68,.2)}
+.btn-warning{background:#FEF3E2;color:var(--warning);border:1px solid rgba(184,117,26,.2)}
 .btn-sm{padding:5px 10px;font-size:12px}
-.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;font-family:'Exo 2',sans-serif;white-space:nowrap}
-.badge-pendiente{background:rgba(245,158,11,.15);color:var(--warning);border:1px solid rgba(245,158,11,.2)}
-.badge-en_curso{background:rgba(59,130,246,.2);color:#93c5fd;border:1px solid rgba(59,130,246,.3)}
-.badge-entregado{background:rgba(34,197,94,.15);color:var(--success);border:1px solid rgba(34,197,94,.2)}
-.badge-cancelado{background:rgba(239,68,68,.15);color:var(--danger);border:1px solid rgba(239,68,68,.2)}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;font-family:'Inter',sans-serif;white-space:nowrap}
+.badge-pendiente{background:#FEF3E2;color:var(--warning);border:1px solid rgba(184,117,26,.2)}
+.badge-en_curso{background:#EBF2FD;color:var(--info);border:1px solid rgba(26,95,173,.2)}
+.badge-entregado{background:#EBF5EE;color:var(--success);border:1px solid rgba(45,122,68,.2)}
+.badge-cancelado{background:#FDECEB;color:var(--danger);border:1px solid rgba(192,57,43,.2)}
 .table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border)}
 table{width:100%;border-collapse:collapse}
 thead th{background:var(--surface2);padding:11px 14px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);font-weight:600;white-space:nowrap}
 tbody tr{border-top:1px solid var(--border);transition:.2s}
 tbody tr:hover{background:var(--surface2)}
-tbody td{padding:11px 14px;font-size:13px}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;transition:.2s}
-.card:hover{border-color:var(--primary);box-shadow:0 0 15px var(--primary-glow)}
+tbody td{padding:11px 14px;font-size:13px;color:var(--text)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;transition:.2s;box-shadow:var(--shadow-sm)}
+.card:hover{border-color:var(--primary);box-shadow:var(--shadow-md)}
 .card-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.card-title{font-weight:600;font-size:15px;font-family:'Exo 2',sans-serif}
+.card-title{font-weight:600;font-size:15px;font-family:'Inter',sans-serif;color:var(--text)}
 .card-sub{font-size:12px;color:var(--text-muted);margin-top:3px}
 .charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
-.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;box-shadow:var(--shadow-sm)}
 .chart-title{font-size:13px;font-weight:600;color:var(--text-muted);margin-bottom:16px;text-transform:uppercase;letter-spacing:.6px}
 .chart-wrap{position:relative;height:180px}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+.modal-overlay{position:fixed;inset:0;background:rgba(26,21,18,.45);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
 .modal-overlay.open{display:flex}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-md)}
 .modal-lg{max-width:800px}
 .modal-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:1}
-.modal-title{font-size:17px;font-weight:700;font-family:'Exo 2',sans-serif}
+.modal-title{font-size:17px;font-weight:700;font-family:'Inter',sans-serif;color:var(--text)}
 .modal-close{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:20px;line-height:1;padding:4px}
 .modal-body{padding:20px 24px}
 .modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
 .form-group{margin-bottom:16px}
-.form-label{display:block;font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;font-family:'Exo 2',sans-serif}
-.form-control{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:.2s}
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;font-family:'Inter',sans-serif}
+.form-control{width:100%;background:#fff;border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:.2s}
 .form-control:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-glow)}
-.form-control option{background:var(--surface2)}
+.form-control option{background:#fff}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .search-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
-.search-input{flex:1;min-width:150px;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:9px 14px;font-size:14px;outline:none;font-family:'Inter',sans-serif}
+.search-input{flex:1;min-width:150px;background:#fff;border:1px solid var(--border);color:var(--text);border-radius:8px;padding:9px 14px;font-size:14px;outline:none;font-family:'Inter',sans-serif}
 .search-input:focus{border-color:var(--primary)}
 .search-input::placeholder{color:var(--text-muted)}
-.viaje-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;transition:.2s;flex-wrap:wrap}
-.viaje-card:hover{border-color:var(--primary)}
+.viaje-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;transition:.2s;flex-wrap:wrap;box-shadow:var(--shadow-sm)}
+.viaje-card:hover{border-color:var(--primary);box-shadow:var(--shadow-md)}
 .viaje-card.pendiente{border-left:3px solid var(--warning)}
-.viaje-card.en_curso{border-left:3px solid var(--accent)}
+.viaje-card.en_curso{border-left:3px solid var(--info)}
 .viaje-card.entregado{border-left:3px solid var(--success)}
 .viaje-card.cancelado{border-left:3px solid var(--danger)}
-.viaje-id{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-muted);white-space:nowrap}
+.viaje-id{font-size:12px;color:var(--text-muted);white-space:nowrap}
 .viaje-info{flex:1;min-width:150px}
-.viaje-ruta{font-weight:600;font-size:14px;margin-bottom:3px}
+.viaje-ruta{font-weight:600;font-size:14px;margin-bottom:3px;color:var(--text)}
 .viaje-meta{font-size:12px;color:var(--text-muted)}
-.viaje-price{font-family:'JetBrains Mono',monospace;font-weight:500;font-size:15px;white-space:nowrap}
+.viaje-price{font-weight:600;font-size:15px;white-space:nowrap;color:var(--text)}
 .summary-bar{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
 .summary-item{text-align:center;min-width:80px}
 .summary-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;font-weight:600}
-.summary-value{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:500;margin-top:2px}
+.summary-value{font-size:16px;font-weight:600;margin-top:2px;color:var(--text)}
 .toast-container{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px}
-.toast{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--text);animation:slideIn .3s ease;box-shadow:0 8px 24px rgba(0,0,0,.5);max-width:300px}
+.toast{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--text);animation:slideIn .3s ease;box-shadow:var(--shadow-md);max-width:300px}
 .toast.success{border-left:3px solid var(--success)}
 .toast.error{border-left:3px solid var(--danger)}
 .toast.info{border-left:3px solid var(--primary)}
 @keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
-.mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:150;backdrop-filter:blur(4px)}
+.mobile-overlay{display:none;position:fixed;inset:0;background:rgba(26,21,18,.45);z-index:150;backdrop-filter:blur(4px)}
 .mobile-overlay.open{display:block}
 .mobile-drawer{position:fixed;left:0;top:0;bottom:0;width:240px;background:var(--surface);border-right:1px solid var(--border);z-index:151;transform:translateX(-100%);transition:.3s;display:flex;flex-direction:column}
 .mobile-drawer.open{transform:translateX(0)}
@@ -142,14 +147,25 @@ tbody td{padding:11px 14px;font-size:13px}
 .divider{height:1px;background:var(--border);margin:16px 0}
 .progress{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:6px}
 .progress-fill{height:100%;background:var(--primary);border-radius:2px}
-.status-select{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:4px 8px;font-size:12px;font-family:'Inter',sans-serif;cursor:pointer;outline:none}
+.status-select{background:#fff;border:1px solid var(--border);color:var(--text);border-radius:6px;padding:4px 8px;font-size:12px;font-family:'Inter',sans-serif;cursor:pointer;outline:none}
 .status-select:focus{border-color:var(--primary)}
 .zona-row{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--border);transition:.2s;flex-wrap:wrap}
 .zona-row:hover{background:var(--surface2)}
-.zona-name{flex:1;font-size:13px;font-weight:500;min-width:120px}
+.zona-name{flex:1;font-size:13px;font-weight:500;min-width:120px;color:var(--text)}
 .zona-region{font-size:11px;color:var(--text-muted);padding:2px 8px;background:var(--surface2);border:1px solid var(--border);border-radius:12px}
-.zona-price{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;min-width:80px;text-align:right}
-.zona-edit-input{background:var(--surface2);border:1px solid var(--primary);color:var(--text);border-radius:6px;padding:4px 8px;font-size:13px;font-family:'JetBrains Mono',monospace;width:90px;outline:none}
+.zona-price{font-size:13px;font-weight:600;min-width:80px;text-align:right;color:var(--text)}
+.zona-edit-input{background:#fff;border:1px solid var(--primary);color:var(--text);border-radius:6px;padding:4px 8px;font-size:13px;font-family:'Inter',sans-serif;width:90px;outline:none}
+/* Agent cards */
+.agents-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.agent-card{display:flex;flex-direction:column;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:var(--shadow-sm)}
+.agent-header{display:flex;align-items:flex-start;gap:10px}
+.agent-icon{width:36px;height:36px;background:var(--primary-light);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--primary);flex-shrink:0}
+.agent-name{font-size:14px;font-weight:700;color:var(--text)}
+.agent-tag{font-size:11px;color:var(--success);font-weight:600}
+.agent-desc{font-size:13px;color:var(--text-secondary);line-height:1.55;margin:0}
+.agent-solves{list-style:none;display:flex;flex-direction:column;gap:5px;flex:1;padding:0;margin:0}
+.agent-solves li{font-size:12px;color:var(--text-muted);padding-left:14px;position:relative;line-height:1.45}
+.agent-solves li::before{content:'→';position:absolute;left:0;color:var(--primary);font-weight:700}
 @media print{
   .sidebar,.topbar,.mobile-nav,.btn,.toast-container,.modal-overlay{display:none!important}
   .main{margin:0!important;padding:10px!important}
@@ -180,7 +196,7 @@ tbody td{padding:11px 14px;font-size:13px}
   <div class="sidebar-logo">
     <div class="logo-row">
       <svg class="logo-icon" viewBox="0 0 38 38" fill="none">
-        <defs><linearGradient id="lgl" x1="0" y1="0" x2="38" y2="38"><stop stop-color="#10B981"/><stop offset="1" stop-color="#3B82F6"/></linearGradient></defs>
+        <defs><linearGradient id="lgl" x1="0" y1="0" x2="38" y2="38"><stop stop-color="#4A3B7A"/><stop offset="1" stop-color="#E8A020"/></linearGradient></defs>
         <rect x="2" y="2" width="34" height="34" rx="10" fill="url(#lgl)"/>
         <!-- Package box -->
         <path d="M10 16 L19 12 L28 16 L28 26 L19 30 L10 26 Z" fill="none" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
@@ -227,6 +243,10 @@ tbody td{padding:11px 14px;font-size:13px}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
       Liquidación
     </div>
+    <div class="nav-item" onclick="goto('agentes')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1"/></svg>
+      Agentes IA
+    </div>
   </nav>
   <div class="sidebar-footer">
     <span style="color:var(--primary);font-weight:600;">by Yusta Labs</span>
@@ -239,7 +259,7 @@ tbody td{padding:11px 14px;font-size:13px}
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
   </button>
   <div class="topbar-logo">
-    <svg width="24" height="24" viewBox="0 0 38 38" fill="none"><defs><linearGradient id="lglm" x1="0" y1="0" x2="38" y2="38"><stop stop-color="#10B981"/><stop offset="1" stop-color="#3B82F6"/></linearGradient></defs><rect x="2" y="2" width="34" height="34" rx="10" fill="url(#lglm)"/><path d="M10 16 L19 12 L28 16 L28 26 L19 30 L10 26 Z" fill="none" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 16 L19 20 L28 16" stroke="white" stroke-width="1.5"/><path d="M19 20 L19 30" stroke="white" stroke-width="1.5"/></svg>
+    <svg width="24" height="24" viewBox="0 0 38 38" fill="none"><defs><linearGradient id="lglm" x1="0" y1="0" x2="38" y2="38"><stop stop-color="#4A3B7A"/><stop offset="1" stop-color="#E8A020"/></linearGradient></defs><rect x="2" y="2" width="34" height="34" rx="10" fill="url(#lglm)"/><path d="M10 16 L19 12 L28 16 L28 26 L19 30 L10 26 Z" fill="none" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 16 L19 20 L28 16" stroke="white" stroke-width="1.5"/><path d="M19 20 L19 30" stroke="white" stroke-width="1.5"/></svg>
     Aura Logistic
   </div>
   <div style="width:30px"></div>
@@ -256,6 +276,7 @@ tbody td{padding:11px 14px;font-size:13px}
     <div class="nav-item" onclick="goto('empresas');toggleDrawer()">Empresas</div>
     <div class="nav-item" onclick="goto('zonas');toggleDrawer()">Zonas y Precios</div>
     <div class="nav-item" onclick="goto('liquidacion');toggleDrawer()">Liquidación</div>
+    <div class="nav-item" onclick="goto('agentes');toggleDrawer()">Agentes IA</div>
   </nav>
 </div>
 
@@ -298,7 +319,7 @@ tbody td{padding:11px 14px;font-size:13px}
     <div class="chart-card"><div class="chart-title">Viajes últimos 7 días</div><div class="chart-wrap"><canvas id="chartViajes"></canvas></div></div>
     <div class="chart-card"><div class="chart-title">Estado de envíos</div><div class="chart-wrap"><canvas id="chartEstados"></canvas></div></div>
   </div>
-  <div style="font-size:15px;font-weight:700;margin-bottom:12px;font-family:'Exo 2',sans-serif">Viajes activos hoy</div>
+  <div style="font-size:15px;font-weight:700;margin-bottom:12px;font-family:'Inter',sans-serif">Viajes activos hoy</div>
   <div id="dashViajes"></div>
 </div>
 
@@ -354,7 +375,7 @@ tbody td{padding:11px 14px;font-size:13px}
     </div>
     <div id="nv_preview" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:16px">
       <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;margin-bottom:8px">Precio estimado</div>
-      <div id="nv_precioPreview" style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:600;color:var(--accent)"></div>
+      <div id="nv_precioPreview" style="font-family:'Inter',sans-serif;font-size:20px;font-weight:600;color:var(--accent)"></div>
       <div id="nv_precioDetalle" style="font-size:12px;color:var(--text-muted);margin-top:4px"></div>
     </div>
     <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px" onclick="guardarViaje()">Confirmar viaje</button>
@@ -382,7 +403,7 @@ tbody td{padding:11px 14px;font-size:13px}
   <div class="search-bar"><input class="search-input" placeholder="Buscar empresa..." id="searchEmpresas" oninput="renderEmpresas()"></div>
   <div id="empresasList"></div>
   <div style="margin-top:24px">
-    <div style="font-size:15px;font-weight:700;margin-bottom:12px;font-family:'Exo 2',sans-serif">💳 Estado de Cuenta — Mes actual</div>
+    <div style="font-size:15px;font-weight:700;margin-bottom:12px;font-family:'Inter',sans-serif">💳 Estado de Cuenta — Mes actual</div>
     <div class="table-wrap"><table><thead><tr><th>Empresa</th><th>Viajes mes</th><th>Total facturado</th><th>Cobrado</th><th>Pendiente</th></tr></thead><tbody id="estadoCuentaBody"></tbody></table></div>
   </div>
 </div>
@@ -422,11 +443,14 @@ tbody td{padding:11px 14px;font-size:13px}
     </div>
   </div>
   <div class="summary-bar" id="liquidSummary"></div>
-  <div style="font-size:15px;font-weight:700;margin-bottom:12px;font-family:'Exo 2',sans-serif">Liquidación de Cadetes</div>
+  <div style="font-size:15px;font-weight:700;margin-bottom:12px;font-family:'Inter',sans-serif">Liquidación de Cadetes</div>
   <div class="table-wrap" style="margin-bottom:24px"><table><thead><tr><th>Cadete</th><th>Viajes</th><th>Monto viajes</th><th>Salario</th><th>Vales</th><th>A pagar</th></tr></thead><tbody id="liquidCadetes"></tbody></table></div>
-  <div style="font-size:15px;font-weight:700;margin-bottom:12px;font-family:'Exo 2',sans-serif">Cuentas por Cobrar</div>
+  <div style="font-size:15px;font-weight:700;margin-bottom:12px;font-family:'Inter',sans-serif">Cuentas por Cobrar</div>
   <div class="table-wrap"><table><thead><tr><th>Empresa</th><th>Viajes</th><th>Total</th><th>Estado</th><th></th></tr></thead><tbody id="liquidEmpresas"></tbody></table></div>
 </div>
+
+<!-- AGENTES IA -->
+<div class="page" id="page-agentes"></div>
 
 </div><!-- /main -->
 
@@ -739,6 +763,35 @@ function renderPage(pg){
   else if(pg==='empresas') renderEmpresas();
   else if(pg==='zonas') renderZonas();
   else if(pg==='liquidacion') renderLiquidacion();
+  else if(pg==='agentes') renderAgentes();
+}
+
+function renderAgentes(){
+  const el=document.getElementById('page-agentes');
+  if(!el)return;
+  const agents=[
+    {icon:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',tag:'Agente de atención',name:'El Operador',desc:'Clientes que quieren saber el estado de su envío, cotizar un flete o coordinar un retiro. El agente responde y consulta el sistema al instante, 24/7.',solves:['Clientes que te bombardean preguntando dónde está su envío','Choferes interrumpidos para dar información de estado','Cotizaciones que se pierden por demora en responder']},
+    {icon:'<rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>',tag:'Agente de cobros',name:'El Cobrador',desc:'Facturas vencidas de empresas cliente. El agente hace el seguimiento formal, registra los pagos cuando se acreditan y genera el estado de cuenta automáticamente.',solves:['Clientes B2B que acumulan envíos sin pagar','Tiempo operativo perdido en gestión de cobranzas','Estados de cuenta que nadie actualiza']},
+    {icon:'<path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3"/><rect x="9" y="11" width="14" height="10" rx="2"/>',tag:'Agente de stock',name:'El Almacenero',desc:'Materiales de empaque, insumos logísticos, consumibles. El agente monitorea y gestiona la reposición antes de que falte algo en el depósito.',solves:['Control de combustible y repuestos de flota sin seguimiento','Faltar insumos en el depósito en plena temporada alta','Compras de emergencia a precio mayor']},
+    {icon:'<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',tag:'Agente de datos',name:'El Analista',desc:'Entregas del mes, tasa de puntualidad, rutas más rentables, clientes que más volumen generan. Tu KPI operativo llega cada lunes.',solves:['No saber qué ruta te cuesta más nafta que lo que cobrás','Decisiones operativas sin datos de rentabilidad real','Horas perdidas consolidando datos de múltiples fuentes']},
+    {icon:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.18 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>',tag:'Agente de contenido',name:'El Comercial',desc:'Comunicaciones para temporada alta, promociones para clientes corporativos, novedades de servicio y actualizaciones de tarifas. Todo automatizado.',solves:['Comunicación masiva a clientes sobre cambios operativos','Clientes que se enteran tarde de nuevas tarifas','Oportunidades de venta perdidas por falta de contacto']},
+    {icon:'<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',tag:'Agente de retención',name:'El Fidelizador',desc:'Clientes que no cotizaron en 30 días. El agente los contacta con una propuesta de tarifa especial antes de que se vayan a la competencia.',solves:['Clientes de logística que se van a la competencia','Volumen de envíos que cae sin aviso previo','Reactivación de cuentas dormidas sin esfuerzo manual']}
+  ];
+  el.innerHTML=`<div class="section-header"><div><div class="section-title">Agentes IA</div></div></div>
+<div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;padding:14px 18px;background:var(--primary-light);border-radius:10px;border-left:4px solid var(--primary)">
+  <div style="font-size:13px;font-weight:600;color:var(--primary)">6 agentes activos</div>
+  <div style="width:1px;height:16px;background:var(--primary);opacity:.3"></div>
+  <div style="font-size:13px;color:var(--text-secondary)">Automatizando operaciones, cobros, stock, análisis y fidelización</div>
+</div>
+<div class="agents-grid">${agents.map(a=>`<div class="agent-card">
+  <div class="agent-header">
+    <div class="agent-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">${a.icon}</svg></div>
+    <div><div class="agent-tag">${a.tag}</div><div class="agent-name">${a.name}</div></div>
+  </div>
+  <p class="agent-desc">${a.desc}</p>
+  <ul class="agent-solves">${a.solves.map(s=>`<li>${s}</li>`).join('')}</ul>
+  <button class="btn btn-primary" style="margin-top:4px;width:100%">Ver en accion</button>
+</div>`).join('')}</div>`;
 }
 
 // CHARTS
@@ -1068,7 +1121,7 @@ function verCadete(id){
       <div class="summary-item"><div class="summary-label">A pagar</div><div class="summary-value" style="color:var(--success)">${ars(cad.salario-totalVales)}</div></div>
     </div>
     <div class="divider"></div>
-    <div style="font-weight:600;margin-bottom:10px;font-family:'Exo 2',sans-serif">Vales / Adelantos</div>
+    <div style="font-weight:600;margin-bottom:10px;font-family:'Inter',sans-serif">Vales / Adelantos</div>
     ${!cad.vales.length?'<div class="empty" style="padding:16px"><div class="empty-text">Sin vales</div></div>':
     cad.vales.map(v=>`<div style="display:flex;align-items:center;gap:12px;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;margin-bottom:6px">
       <div style="flex:1;font-size:13px">${v.concepto}</div>
@@ -1221,14 +1274,14 @@ function verEmpresa(id){
       <div><div class="form-label">Dirección</div><div>${emp.direccion}</div></div>
     </div>
     <div class="divider"></div>
-    <div style="font-weight:600;margin-bottom:12px;font-family:'Exo 2',sans-serif">Cuenta Corriente por mes</div>
+    <div style="font-weight:600;margin-bottom:12px;font-family:'Inter',sans-serif">Cuenta Corriente por mes</div>
     ${Object.entries(byMes).sort((a,b)=>b[0].localeCompare(a[0])).map(([mes, vs])=>{
       const total=vs.reduce((s,v)=>s+v.precio,0);
       const [y,m]=mes.split('-');
       const mesNombre=new Date(parseInt(y),parseInt(m)-1).toLocaleDateString('es-AR',{month:'long',year:'numeric'});
       return `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px">
-          <div style="font-weight:600;font-family:'Exo 2',sans-serif;text-transform:capitalize">${mesNombre}</div>
+          <div style="font-weight:600;font-family:'Inter',sans-serif;text-transform:capitalize">${mesNombre}</div>
           <div style="display:flex;align-items:center;gap:10px">
             <span class="mono" style="font-size:15px;color:var(--accent)">${ars(total)}</span>
             <span style="font-size:12px;color:var(--text-muted)">${vs.length} viajes</span>
@@ -1374,7 +1427,7 @@ function renderLiquidacion(){
   const liquidEmpEl=document.getElementById('liquidEmpresas');
   if(liquidEmpEl) liquidEmpEl.innerHTML=(db.empresas||[]).map(emp=>{
     const vEmp=viajesMes.filter(v=>v.empresaId===emp.id);
-    const total=vEmp.reduce((s,v)=>s+v.precio,0);
+    const total=vEmp.reduce((s,v)=>s+(v.precio||0),0);
     // FIX 4 — pendiente real basado en facturado
     const pendiente=vEmp.filter(v=>v.estado==='entregado'&&!v.facturado).reduce((s,v)=>s+(v.precio||0),0);
     const cobrado=vEmp.filter(v=>v.facturado).reduce((s,v)=>s+(v.precio||0),0);
@@ -1396,10 +1449,10 @@ function imprimirLiquidacion(){
   const mes=document.getElementById('liquidMes').value||todayStr().slice(0,7);
   const [y,m]=mes.split('-');
   const mesNombre=new Date(parseInt(y),parseInt(m)-1).toLocaleDateString('es-AR',{month:'long',year:'numeric'});
-  const vMes=db.viajes.filter(v=>v.fecha.startsWith(mes)&&v.estado!=='cancelado');
+  const vMes=db.viajes.filter(v=>v.fecha&&v.fecha.startsWith(mes)&&v.estado!=='cancelado');
   const totViajes=vMes.reduce((s,v)=>s+v.precio,0);
   const totSalarios=db.cadetes.reduce((s,c)=>s+c.salario,0);
-  const totVales=db.cadetes.reduce((s,c)=>s+c.vales.filter(v=>v.fecha.startsWith(mes)).reduce((ss,vv)=>ss+vv.monto,0),0);
+  const totVales=(db.cadetes||[]).reduce((s,c)=>s+((c.vales||[]).filter(v=>v.fecha&&v.fecha.startsWith(mes)).reduce((ss,vv)=>ss+(vv.monto||0),0)),0);
   const margen=totViajes-totSalarios-totVales;
 
   const cadRows=db.cadetes.map(cad=>{
@@ -1578,14 +1631,14 @@ function renderVistaCadetePara(cadId,fecha){
     const zona=db.zonas.find(z=>z.id===v.destino?.zona);
     return`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px;border-left:4px solid ${v.estado==='en_curso'?'var(--accent)':v.estado==='entregado'?'var(--success)':'var(--warning)'}">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-muted)">VJ-${v.id.slice(-4).toUpperCase()}</span>
+        <span style="font-family:'Inter',sans-serif;font-size:12px;color:var(--text-muted)">VJ-${v.id.slice(-4).toUpperCase()}</span>
         <span class="badge badge-${v.estado}" style="font-size:12px">${estadoLabel[v.estado]}</span>
       </div>
       <div style="font-weight:700;font-size:15px;margin-bottom:4px">${emp?.nombre||'—'}</div>
       <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px">📍 ${v.origen}</div>
       <div style="font-size:13px;color:var(--text-muted);margin-bottom:10px">→ ${v.destino?.direccion||'—'}, ${zona?.nombre||'—'}</div>
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-        <span style="font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:600;color:var(--accent)">${ars(v.precio)}</span>
+        <span style="font-family:'Inter',sans-serif;font-size:17px;font-weight:600;color:var(--accent)">${ars(v.precio)}</span>
         <div style="display:flex;gap:6px">
           ${v.estado==='pendiente'?`<button class="btn btn-warning btn-sm" onclick="cambiarEstado('${v.id}','en_curso');actualizarVistaCadete()">Retirado</button>`:''}
           ${v.estado==='en_curso'?`<button class="btn btn-success btn-sm" onclick="cambiarEstado('${v.id}','entregado');actualizarVistaCadete()">Entregado</button>`:''}
