@@ -166,6 +166,18 @@ tbody td{padding:11px 14px;font-size:13px;color:var(--text)}
 .agent-solves{list-style:none;display:flex;flex-direction:column;gap:5px;flex:1;padding:0;margin:0}
 .agent-solves li{font-size:12px;color:var(--text-muted);padding-left:14px;position:relative;line-height:1.45}
 .agent-solves li::before{content:'→';position:absolute;left:0;color:var(--primary);font-weight:700}
+.agent-intro{background:var(--primary-light);border-left:4px solid var(--primary);border-radius:10px;padding:16px 20px;margin-bottom:20px}
+.agent-intro-title{font-size:15px;font-weight:700;color:var(--primary);margin-bottom:4px}
+.agent-intro-sub{font-size:13px;color:var(--text-secondary);line-height:1.5}
+.agent-status{margin-left:auto;background:var(--success-bg);color:var(--success);font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.agent-scenario{font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.agent-flow{display:flex;flex-direction:column;gap:6px;margin:8px 0;padding:10px 12px;background:var(--surface-2);border-radius:8px}
+.flow-step{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--text-secondary)}
+.flow-dot{width:18px;height:18px;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;margin-top:1px}
+.flow-dot.detect{background:#EEEBF5;color:#4A3B7A}
+.flow-dot.analyze{background:var(--warning-bg);color:var(--warning)}
+.flow-dot.act{background:var(--success-bg);color:var(--success)}
+@media(max-width:480px){.agents-grid{grid-template-columns:1fr}.agent-header{flex-wrap:wrap;gap:8px}.agent-status{margin-left:0}.agent-card{padding:14px}.agent-flow{padding:8px 10px}.flow-step{font-size:11px}}
 @media print{
   .sidebar,.topbar,.mobile-nav,.btn,.toast-container,.modal-overlay{display:none!important}
   .main{margin:0!important;padding:10px!important}
@@ -321,6 +333,21 @@ tbody td{padding:11px 14px;font-size:13px;color:var(--text)}
   </div>
   <div style="font-size:15px;font-weight:700;margin-bottom:12px;font-family:'Inter',sans-serif">Viajes activos hoy</div>
   <div id="dashViajes"></div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--primary);border-radius:12px;padding:20px;margin-top:16px;box-shadow:var(--shadow-sm)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+      <div style="width:28px;height:28px;background:var(--primary-light);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--primary)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
+      <span style="font-size:14px;font-weight:700;color:var(--text)">Actividad de Agentes IA</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;color:var(--text-secondary)">El Despachador — ruta óptima calculada para 8 viajes de hoy</span><span style="background:var(--success-bg);color:var(--success);font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px">Completado</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;color:var(--text-secondary)">El Cobrador — 3 facturas con más de 30 días sin pago</span><span style="background:var(--warning-bg);color:var(--warning);font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px">Acción requerida</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;color:var(--text-secondary)">El Analista — reporte de eficiencia de cadetes enviado</span><span style="background:var(--success-bg);color:var(--success);font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px">Completado</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;color:var(--text-secondary)">La Recepcionista — cliente consultó por envío urgente a las 22hs</span><span style="background:var(--info-bg);color:var(--info);font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px">En proceso</span></div>
+    </div>
+    <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+      <button class="btn btn-ghost btn-sm" onclick="goto('agentes')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1"/></svg> Ver todos los agentes</button>
+    </div>
+  </div>
 </div>
 
 <!-- VIAJES -->
@@ -770,28 +797,31 @@ function renderAgentes(){
   const el=document.getElementById('page-agentes');
   if(!el)return;
   const agents=[
-    {icon:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',tag:'Agente de atención',name:'El Operador',desc:'Clientes que quieren saber el estado de su envío, cotizar un flete o coordinar un retiro. El agente responde y consulta el sistema al instante, 24/7.',solves:['Clientes que te bombardean preguntando dónde está su envío','Choferes interrumpidos para dar información de estado','Cotizaciones que se pierden por demora en responder']},
-    {icon:'<rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>',tag:'Agente de cobros',name:'El Cobrador',desc:'Facturas vencidas de empresas cliente. El agente hace el seguimiento formal, registra los pagos cuando se acreditan y genera el estado de cuenta automáticamente.',solves:['Clientes B2B que acumulan envíos sin pagar','Tiempo operativo perdido en gestión de cobranzas','Estados de cuenta que nadie actualiza']},
-    {icon:'<path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3"/><rect x="9" y="11" width="14" height="10" rx="2"/>',tag:'Agente de stock',name:'El Almacenero',desc:'Materiales de empaque, insumos logísticos, consumibles. El agente monitorea y gestiona la reposición antes de que falte algo en el depósito.',solves:['Control de combustible y repuestos de flota sin seguimiento','Faltar insumos en el depósito en plena temporada alta','Compras de emergencia a precio mayor']},
-    {icon:'<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',tag:'Agente de datos',name:'El Analista',desc:'Entregas del mes, tasa de puntualidad, rutas más rentables, clientes que más volumen generan. Tu KPI operativo llega cada lunes.',solves:['No saber qué ruta te cuesta más nafta que lo que cobrás','Decisiones operativas sin datos de rentabilidad real','Horas perdidas consolidando datos de múltiples fuentes']},
-    {icon:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.18 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>',tag:'Agente de contenido',name:'El Comercial',desc:'Comunicaciones para temporada alta, promociones para clientes corporativos, novedades de servicio y actualizaciones de tarifas. Todo automatizado.',solves:['Comunicación masiva a clientes sobre cambios operativos','Clientes que se enteran tarde de nuevas tarifas','Oportunidades de venta perdidas por falta de contacto']},
-    {icon:'<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',tag:'Agente de retención',name:'El Fidelizador',desc:'Clientes que no cotizaron en 30 días. El agente los contacta con una propuesta de tarifa especial antes de que se vayan a la competencia.',solves:['Clientes de logística que se van a la competencia','Volumen de envíos que cae sin aviso previo','Reactivación de cuentas dormidas sin esfuerzo manual']}
+    {icon:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',tag:'Agente de atención',name:'El Operador',desc:'Un cliente escribe a las 11pm: "¿Dónde está mi paquete? Necesito saber si llega mañana." El agente consulta el estado del viaje en el sistema y responde al instante con ubicación, cadete asignado y hora estimada.',flow:[{t:'detect',l:'Detecta',v:'Consulta entrante sobre estado de envío, cotización de flete o coordinación de retiro'},{t:'analyze',l:'Analiza',v:'Busca el viaje por número o empresa, lee estado, cadete asignado y ETA estimado'},{t:'act',l:'Actúa',v:'Responde 24/7 con información precisa y cotiza nuevo envío si el cliente lo pide'}],solves:['Clientes que bombardean el WhatsApp preguntando por su paquete','Choferes interrumpidos en ruta para dar info de estado','Cotizaciones que se pierden porque nadie respondió a tiempo']},
+    {icon:'<rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>',tag:'Agente de cobros',name:'El Cobrador',desc:'Distribuidora López acumula 8 envíos del mes sin pagar. La factura venció hace 18 días. El agente envía el estado de cuenta, hace seguimiento formal y registra cada respuesta sin que vos tengas que hacer nada.',flow:[{t:'detect',l:'Detecta',v:'Factura de empresa cliente vencida hace más de 5 días hábiles'},{t:'analyze',l:'Analiza',v:'Calcula total adeudado, envíos incluidos, días de mora e historial de pagos'},{t:'act',l:'Actúa',v:'Envía estado de cuenta formal y recordatorio; escala si no hay respuesta en 72hs'}],solves:['Empresas B2B que acumulan envíos sin pagar mes a mes','Operadores perdiendo tiempo en llamadas de cobranza','Estados de cuenta que nadie actualiza y nadie envía']},
+    {icon:'<path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3"/><rect x="9" y="11" width="14" height="10" rx="2"/>',tag:'Agente de insumos',name:'El Almacenero',desc:'Cajas, cintas, material de embalaje y combustible de flota. El agente monitorea los niveles y genera la orden de reposición antes de que el depósito quede sin insumos en plena temporada alta de envíos.',flow:[{t:'detect',l:'Detecta',v:'Insumo de depósito o combustible de flota baja del umbral mínimo configurado'},{t:'analyze',l:'Analiza',v:'Proyecta consumo según volumen de viajes activos y días hasta la próxima entrega'},{t:'act',l:'Actúa',v:'Genera orden al proveedor o avisa al encargado con cantidad exacta a reponer'}],solves:['Quedarse sin cajas de embalaje en pico de temporada','Flota parada por falta de combustible o repuestos básicos','Compras de emergencia a precio de mostrador sin negociación']},
+    {icon:'<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',tag:'Agente de datos',name:'El Analista',desc:'Cada lunes a las 7am: "247 viajes la semana pasada, tasa de puntualidad 91%, ruta CABA-Nordelta la más rentable, cadete más eficiente: Julio (38 entregas, 0 incidentes)." Llega solo al WhatsApp del dueño.',flow:[{t:'detect',l:'Detecta',v:'Cierre de semana o período operativo configurado'},{t:'analyze',l:'Analiza',v:'Procesa viajes, puntualidad, rentabilidad por ruta, performance por cadete y volumen por cliente'},{t:'act',l:'Actúa',v:'Envía reporte ejecutivo con KPIs operativos y señala desvíos que requieren atención'}],solves:['No saber qué ruta te cuesta más nafta de lo que cobrás','Decisiones de tarifas sin datos reales de rentabilidad','Horas consolidando planillas de múltiples cadetes manualmente']},
+    {icon:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.18 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>',tag:'Agente comercial',name:'El Comercial',desc:'Temporada alta de fin de año, actualización de tarifas por inflación, nuevo servicio de última milla. El agente comunica novedades a toda la cartera de clientes corporativos con un mensaje personalizado por empresa.',flow:[{t:'detect',l:'Detecta',v:'Evento programado: actualización de tarifas, campaña estacional o nuevo servicio activo'},{t:'analyze',l:'Analiza',v:'Segmenta clientes por volumen, zona y tipo de envío para personalizar el mensaje'},{t:'act',l:'Actúa',v:'Envía comunicación masiva segmentada por WhatsApp o email según preferencia del cliente'}],solves:['Clientes que se enteran de cambios de tarifas por sorpresa en la factura','Oportunidades de venta de nuevos servicios que nunca se comunican','Comunicaciones inconsistentes según con quién habló el cliente']},
+    {icon:'<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',tag:'Agente de retención',name:'El Fidelizador',desc:'Supermercado Chang no cotizó un envío hace 35 días. Era uno de los clientes de mayor volumen. El agente detecta el silencio y lo contacta con una propuesta de tarifa especial antes de que migre a la competencia.',flow:[{t:'detect',l:'Detecta',v:'Cliente activo sin pedido ni cotización hace más de 30 días'},{t:'analyze',l:'Analiza',v:'Volumen histórico, frecuencia de envíos y margen generado para calcular valor a retener'},{t:'act',l:'Actúa',v:'Envía propuesta personalizada de reactivación con tarifa o beneficio específico para ese cliente'}],solves:['Clientes de alto volumen que migran a la competencia sin aviso','Caída de facturación mensual sin entender por qué','Cuentas dormidas que nadie reactiva porque nadie las detecta']}
   ];
-  el.innerHTML=`<div class="section-header"><div><div class="section-title">Agentes IA</div></div></div>
-<div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;padding:14px 18px;background:var(--primary-light);border-radius:10px;border-left:4px solid var(--primary)">
-  <div style="font-size:13px;font-weight:600;color:var(--primary)">6 agentes activos</div>
-  <div style="width:1px;height:16px;background:var(--primary);opacity:.3"></div>
-  <div style="font-size:13px;color:var(--text-secondary)">Automatizando operaciones, cobros, stock, análisis y fidelización</div>
-</div>
-<div class="agents-grid">${agents.map(a=>`<div class="agent-card">
+  const tpl=agents.map(a=>`<div class="agent-card">
   <div class="agent-header">
     <div class="agent-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">${a.icon}</svg></div>
-    <div><div class="agent-tag">${a.tag}</div><div class="agent-name">${a.name}</div></div>
+    <div style="flex:1"><div class="agent-tag">${a.tag}</div><div class="agent-name">${a.name}</div></div>
+    <span class="agent-status">Activo</span>
   </div>
   <p class="agent-desc">${a.desc}</p>
+  <div class="agent-scenario">Cómo funciona dentro de Aura Logistic</div>
+  <div class="agent-flow">${a.flow.map(f=>`<div class="flow-step"><div class="flow-dot ${f.t}">${f.l.slice(0,3).toUpperCase()}</div><div><strong>${f.l}</strong> — ${f.v}</div></div>`).join('')}</div>
+  <div class="agent-scenario" style="margin-top:6px">Problemas que elimina</div>
   <ul class="agent-solves">${a.solves.map(s=>`<li>${s}</li>`).join('')}</ul>
-  <button class="btn btn-primary" style="margin-top:4px;width:100%">Ver en accion</button>
-</div>`).join('')}</div>`;
+</div>`).join('');
+  el.innerHTML=`<div class="section-header"><div><div class="section-title">Agentes IA</div></div></div>
+<div class="agent-intro">
+  <div class="agent-intro-title">Tus empleados que trabajan 24/7 sin sueldo fijo</div>
+  <div class="agent-intro-sub">Cada agente monitorea las operaciones, detecta situaciones clave y actúa solo — atención al cliente, cobros, insumos, análisis y retención, automatizados para tu empresa de logística.</div>
+</div>
+<div class="agents-grid">${tpl}</div>`;
 }
 
 // CHARTS
